@@ -1,0 +1,132 @@
+{
+    "folders": [
+        {
+            "path": ".",
+            "name": "信号实验箱"
+        }
+    ],
+    "settings": {
+        "C_Cpp.default.cStandard": "c99",
+        "C_Cpp.autocomplete": "Default",
+        "C_Cpp.default.cppStandard": "gnu++11",
+        "C_Cpp.default.compilerPath": "D:/Qt5.12.12/Tools/mingw730_32/bin/g++.exe",
+        "C_Cpp.default.compilerArgs": [
+            "-Wall"
+        ],
+        "C_Cpp.vcFormat.newLine.beforeOpenBrace.type": "newLine",
+        "C_Cpp.default.includePath": [
+            "${workspaceFolder}/**",
+            "D:/Qt5.12.12/5.12.12/mingw73_32/include/**",
+            "D:/Qt5.12.12/Tools/mingw730_32/i686-w64-mingw32/include**",
+            "D:/Qt5.12.12/Tools/mingw730_32/i686-w64-mingw32**",
+        ],
+        "C_Cpp.default.defines": [],
+        "C_Cpp.default.intelliSenseMode": "windows-gcc-x86",
+        "files.exclude": {
+            "**/.git": true,
+            "**/.svn": true,
+            "**/.hg": true,
+            "**/CVS": true,
+            "**/.DS_Store": true,
+            "**/Thumbs.db": true,
+            "*.code-workspace": true,
+            // "debug": true,
+        },
+        "files.encoding": "utf8",
+        "search.useIgnoreFiles": false
+    },
+    "tasks": {
+        "version": "2.0.0",
+        "tasks": [
+            {
+                "type": "shell",
+                "label": "build",
+                "command": "make",
+                "args": [
+                    "-j",
+                    "all"
+                ],
+                "options": {
+                    "cwd": "${workspaceFolder}/build"
+                },
+                "presentation": {
+                    "echo": true,
+                    "reveal": "always",
+                    "focus": false,
+                    "panel": "shared",
+                    "showReuseMessage": true,
+                    "clear": true
+                },
+                "detail": "构建目标",
+                "group": {
+                    "kind": "build",
+                    "isDefault": true
+                }
+            },
+            {
+                "type": "shell",
+                "label": "clean",
+                "command": "make",
+                "args": [
+                    "-j",
+                    "clean"
+                ],
+                "options": {
+                    "cwd": "${workspaceFolder}/build"
+                },
+                "presentation": {
+                    "reveal": "silent",
+                    "close": true
+                },
+                "detail": "清理工作区内的目标文件"
+            },
+            {
+                "type": "shell",
+                "label": "run",
+                "command": "./signalBox",
+                "options": {
+                    "cwd": "${workspaceFolder}/build"
+                },
+                "args": [],
+                "presentation": {
+                    "echo": true,
+                    "reveal": "always",
+                    "focus": false,
+                    "panel": "shared",
+                    "showReuseMessage": true,
+                    "clear": true
+                },
+                "detail": "运行",
+                "group": {
+                    "kind": "test",
+                    "isDefault": true
+                }
+            }
+        ]
+    },
+    "launch": {
+        "configurations": [
+            {
+                "name": "main.debug",
+                "type": "cppdbg",
+                "request": "launch",
+                "program": "${workspaceFolder}/build/signalBox.exe",
+                "args": [],
+                "stopAtEntry": true,
+                "cwd": "${workspaceFolder}/build",
+                "environment": [],
+                "externalConsole": true,
+                "MIMode": "gdb",
+                "miDebuggerPath": "D:/Qt5.12.12/Tools/mingw730_32/bin/gdb.exe",
+                "setupCommands": [
+                    {
+                        "description": "为 gdb 启用整齐打印",
+                        "text": "-enable-pretty-printing",
+                        "ignoreFailures": true
+                    }
+                ]
+            },
+        ],
+        "compounds": []
+    }
+}
