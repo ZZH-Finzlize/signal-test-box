@@ -9,16 +9,16 @@
         "C_Cpp.default.cStandard": "c99",
         "C_Cpp.autocomplete": "Default",
         "C_Cpp.default.cppStandard": "gnu++11",
-        "C_Cpp.default.compilerPath": "D:/Qt5.12.12/Tools/mingw730_32/bin/g++.exe",
+        "C_Cpp.default.compilerPath": "${env:QT_Install}/Tools/mingw730_32/bin/g++.exe",
         "C_Cpp.default.compilerArgs": [
             "-Wall"
         ],
         "C_Cpp.vcFormat.newLine.beforeOpenBrace.type": "newLine",
         "C_Cpp.default.includePath": [
             "${workspaceFolder}/**",
-            "D:/Qt5.12.12/5.12.12/mingw73_32/include/**",
-            "D:/Qt5.12.12/Tools/mingw730_32/i686-w64-mingw32/include**",
-            "D:/Qt5.12.12/Tools/mingw730_32/i686-w64-mingw32**",
+            "${env:QT_Install}/5.12.12/mingw73_32/include/**",
+            "${env:QT_Install}/Tools/mingw730_32/i686-w64-mingw32/include**",
+            "${env:QT_Install}/Tools/mingw730_32/i686-w64-mingw32**",
         ],
         "C_Cpp.default.defines": [],
         "C_Cpp.default.intelliSenseMode": "windows-gcc-x86",
@@ -117,7 +117,7 @@
                 "environment": [],
                 "externalConsole": true,
                 "MIMode": "gdb",
-                "miDebuggerPath": "D:/Qt5.12.12/Tools/mingw730_32/bin/gdb.exe",
+                "miDebuggerPath": "${env:QT_Install}/Tools/mingw730_32/bin/gdb.exe",
                 "setupCommands": [
                     {
                         "description": "为 gdb 启用整齐打印",

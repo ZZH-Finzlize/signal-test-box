@@ -1,7 +1,7 @@
 cmake_minimum_required(VERSION 3.21.1)
 project(signalBox VERSION 0.0.1 DESCRIPTION 信号工具箱 LANGUAGES CXX)
 
-find_package(Qt5 COMPONENTS Core Widgets REQUIRED)
+find_package(Qt5 COMPONENTS Core Widgets Charts REQUIRED)
 find_package(FFTW3)
 
 set(execName ${PROJECT_NAME})
@@ -21,4 +21,4 @@ set_target_properties(${execName} PROPERTIES AUTOMOC TRUE AUTOUIC TRUE AUTORCC T
 
 target_link_directories(${execName} PUBLIC ${FFTW3_LIBRARY_DIRS})
 
-target_link_libraries(${execName} ${Qt5Widgets_LIBRARIES} ${FFTW3_LIBRARIES})
+target_link_libraries(${execName} ${Qt5Widgets_LIBRARIES} ${Qt5Charts_LIBRARIES} ${FFTW3_LIBRARIES})
