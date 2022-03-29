@@ -50,10 +50,10 @@ void MainWindow::enableExpress(void)
     disconnect(ui.pSignalList, &QListWidget::currentItemChanged, this, &MainWindow::enableExpress);
 }
 
-void MainWindow::on_pSignalList_currentItemChanged(QListWidgetItem *current, QListWidgetItem *previous)
+void MainWindow::on_pSignalList_currentItemChanged(QListWidgetItem* current, QListWidgetItem* previous)
 {
     //保存上一个
-    if(nullptr != previous)
+    if (nullptr != previous)
     {
         previous->setData(this->signalExpressRole, ui.pSignalExpress->toPlainText());
     }
@@ -80,12 +80,22 @@ void MainWindow::signalExpEditDone(void)
 
 void MainWindow::calculateCurSig(void)
 {
-    yylex();
+    textToParse = ui.pSignalExpress->toPlainText();
+    yyparse();
+    if (nullptr == root)
+    {
+        qDebug() << "parse fail";
+        return;
+    }
+    
     ui.pSignalChart->chart()->removeAllSeries();
     auto series = new QSplineSeries();
     for (calPoint = 0;calPoint < 100;calPoint++)
-    {   
+    {
         series->append(calPoint, root->calculate());
     }
+    series->setName(ui.pSignalList->currentItem()->text());
+    delete root;
+    root = nullptr;
     ui.pSignalChart->chart()->addSeries(series);
 }

@@ -13,7 +13,7 @@ protected://= 45 * sin(t / 12) + 15 + 32
 
 public:
     ASTExpress_t() {}
-    ~ASTExpress_t() {}
+    virtual ~ASTExpress_t() {}
 
     virtual float calculate(void) const = 0;
 };
@@ -42,7 +42,7 @@ protected:
     QList<ASTExpress_t*>* args;
 public:
     ASTFunctionCall_t(calFunc_t fun, QList<ASTExpress_t*>* args) :Calcb(fun), args(args) {}
-    ~ASTFunctionCall_t()
+    virtual ~ASTFunctionCall_t()
     {
         for (auto exp : *args)
             delete exp;
@@ -74,7 +74,7 @@ protected:
     float value;
 public:
     ASTNumber_t(float f) :value(f) {}
-    ~ASTNumber_t() {}
+    virtual ~ASTNumber_t() {}
 
     virtual float calculate(void) const override { return this->value; }
 };
@@ -87,7 +87,7 @@ protected:
 
 public:
     ASTTime_t() {}
-    ~ASTTime_t() {}
+    virtual ~ASTTime_t() {}
 
     virtual float calculate(void) const override { return calPoint / 15.0; }
 };
@@ -102,7 +102,7 @@ protected:
 
 public:
     ASTOperator_t(char op, ASTExpress_t* l, ASTExpress_t* r) :op(op), left(l), right(r) {}
-    ~ASTOperator_t()
+    virtual ~ASTOperator_t()
     {
         delete this->left;
         delete this->right;

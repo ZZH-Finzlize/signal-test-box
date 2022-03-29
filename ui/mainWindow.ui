@@ -150,6 +150,11 @@
              <verstretch>0</verstretch>
             </sizepolicy>
            </property>
+           <property name="font">
+            <font>
+             <pointsize>16</pointsize>
+            </font>
+           </property>
            <property name="contextMenuPolicy">
             <enum>Qt::NoContextMenu</enum>
            </property>

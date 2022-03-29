@@ -100,12 +100,12 @@
                 "request": "launch",
                 "program": "${workspaceFolder}/build/signalBox.exe",
                 "args": [],
-                "stopAtEntry": true,
+                // "stopAtEntry": true,
                 "cwd": "${workspaceFolder}/build",
                 "environment": [],
                 "externalConsole": true,
                 "MIMode": "gdb",
-                "miDebuggerPath": "${env:QT_Install}/Tools/mingw730_32/bin/gdb.exe",
+                "miDebuggerPath": "D:/Qt/Tools/mingw730_32/bin/gdb.exe",
                 "setupCommands": [
                     {
                         "description": "为 gdb 启用整齐打印",
