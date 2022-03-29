@@ -1,12 +1,13 @@
 #pragma once
 #include <QString>
+#include <QList>
 #include <cmath>
 
 class ASTExpress_t
 {
 private:
 
-protected://= 45 * sin(t)
+protected://= 45 * sin(t / 12) + 15 + 32
 
 public:
     ASTExpress_t() {}
@@ -33,7 +34,7 @@ private:
 
 protected:
     typedef float (*calFunc_t)(const float*);
-    float* pArgs;
+    QList<ASTExpress_t*> args;
 public:
     ASTFunctionCall_t() {}
     ~ASTFunctionCall_t() {}
