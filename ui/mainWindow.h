@@ -33,6 +33,8 @@ public:
 
     void signalExpEditDone(void);
 
+    void calculateCurSig(void);
+
 public slots:
     void on_pSignalList_currentItemChanged(QListWidgetItem* current, QListWidgetItem *previous);
 };

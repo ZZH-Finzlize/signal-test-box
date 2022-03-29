@@ -1,7 +1,9 @@
 #pragma once
+#include <QtCore>
 #include <QString>
 #include <QList>
 #include <cmath>
+extern uint32_t calPoint;
 
 class ASTExpress_t
 {
@@ -32,14 +34,36 @@ class ASTFunctionCall_t : public ASTExpress_t
 {
 private:
 
-protected:
-    typedef float (*calFunc_t)(const float*);
-    QList<ASTExpress_t*> args;
 public:
-    ASTFunctionCall_t() {}
-    ~ASTFunctionCall_t() {}
+    typedef float (*calFunc_t)(const float*);
 
-    virtual float calculate(void) const override;
+protected:
+    calFunc_t Calcb;
+    QList<ASTExpress_t*>* args;
+public:
+    ASTFunctionCall_t(calFunc_t fun, QList<ASTExpress_t*>* args) :Calcb(fun), args(args) {}
+    ~ASTFunctionCall_t()
+    {
+        for (auto exp : *args)
+            delete exp;
+
+        delete this->args;
+    }
+
+    virtual float calculate(void) const override
+    {
+        auto argLen = args->length();
+        if (0 != argLen)
+        {
+            float* pArgs = new float[argLen];
+            for (int i = 0;i < argLen;i++)
+                pArgs[i] = args->at(i)->calculate();
+
+            return Calcb(pArgs);
+        }
+
+        return Calcb(nullptr);
+    }
 };
 
 class ASTNumber_t :public ASTExpress_t
@@ -49,23 +73,23 @@ private:
 protected:
     float value;
 public:
-    ASTNumber_t() {}
+    ASTNumber_t(float f) :value(f) {}
     ~ASTNumber_t() {}
 
-    virtual float calculate(void) const override { return this->value };
+    virtual float calculate(void) const override { return this->value; }
 };
 
-class ASTInput_t :public ASTExpress_t
+class ASTTime_t :public ASTExpress_t
 {
 private:
 
 protected:
 
 public:
-    ASTInput_t() {}
-    ~ASTInput_t() {}
+    ASTTime_t() {}
+    ~ASTTime_t() {}
 
-    virtual float calculate(void) const override { return 0.1; }//这里应该返回的是当前计算计数值*采样周期后的结果
+    virtual float calculate(void) const override { return calPoint / 15.0; }
 };
 
 class ASTOperator_t :public ASTExpress_t
@@ -73,12 +97,16 @@ class ASTOperator_t :public ASTExpress_t
 private:
 
 protected:
-    ASTExpress_t* left, * right;//左子式和右子式
     char op;//运算符
+    ASTExpress_t* left, * right;//左子式和右子式
 
 public:
-    ASTOperator_t() {}
-    ~ASTOperator_t() {}
+    ASTOperator_t(char op, ASTExpress_t* l, ASTExpress_t* r) :op(op), left(l), right(r) {}
+    ~ASTOperator_t()
+    {
+        delete this->left;
+        delete this->right;
+    }
 
     virtual float calculate(void) const override
     {
@@ -106,3 +134,6 @@ public:
         }
     };
 };
+
+extern ASTExpress_t* root;
+extern QString textToParse;

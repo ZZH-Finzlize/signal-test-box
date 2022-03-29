@@ -1,0 +1,98 @@
+%locations
+
+%{
+#include <stdio.h>
+#include <math.h>
+#include <stdlib.h>
+#include "ast.h"
+#include <QMap>
+#include "symTable.h"
+
+%}
+
+%code requires
+{
+#include "ast.h"
+#define inFileLoc(arg) arg.first_line, arg.first_column, arg.last_line, arg.last_column
+extern int yylex (void);
+extern int yyerror(char* s);
+}
+
+%union{
+    ASTExpress_t *node;//语法树节点
+    QList<ASTExpress_t*> *list;
+    float value;//浮点数值
+    char* id;//符号的名称
+}
+
+%token <value> tk_Number "number"
+%token <id> tk_Symbol "symbol"
+
+%token tk_Time "time"
+
+%token tk_kwIf "if"
+%token tk_kwEles "else"
+
+%token tk_opGequ ">="
+%token tk_opLequ "<="
+%token tk_opNequ "!="
+
+//优先级低
+%left '^'
+%left '<' '>' ">=" "<="
+%left '+' '-'
+%left '*' '/' '%'
+/* %right '!' '~' */
+//优先级高
+
+/* %type <value> constant_exp */
+%type <node> signal signal_exp func_call
+%type <list> arg_list
+
+
+%%
+
+signal: '=' signal_exp {$$ = $2; root = $2;}
+
+signal_exp: '(' signal_exp ')' {$$ = $2;}
+    |signal_exp '+' signal_exp {$$ = new ASTOperator_t('+', $1, $3);}
+    |signal_exp '-' signal_exp {$$ = new ASTOperator_t('-', $1, $3);}
+    |signal_exp '*' signal_exp {$$ = new ASTOperator_t('*', $1, $3);}
+    |signal_exp '/' signal_exp {$$ = new ASTOperator_t('/', $1, $3);}
+    |signal_exp '%' signal_exp {$$ = new ASTOperator_t('%', $1, $3);}
+    |signal_exp '^' signal_exp {$$ = new ASTOperator_t('^', $1, $3);}
+    |func_call
+    |"number" {$$ = new ASTNumber_t($1);}
+    |"time" {$$ = new ASTTime_t();}
+    /* |constant_exp */
+
+func_call: "symbol" '(' arg_list ')' {
+    ASTFunctionCall_t::calFunc_t find_func = nullptr;
+    if(FunSymTable.search($1, find_func))
+    {
+        $$ = new ASTFunctionCall_t(find_func, $3);
+    }
+    $$ = nullptr;
+    free($1);
+    exit(-1);
+}
+
+arg_list: signal_exp {$$ = new QList<ASTExpress_t*>(); $$->append($1);}
+    |arg_list ',' signal_exp {$$ = $1; $$->append($3);}
+
+/* constant_exp: "number"
+    |constant_exp '+' constant_exp
+    |constant_exp '-' constant_exp
+    |constant_exp '*' constant_exp
+    |constant_exp '/' constant_exp
+    |constant_exp '%' constant_exp
+    |constant_exp '^' constant_exp */
+
+
+%%
+
+int yyerror(char* s)
+{
+    printf("error occor:%s : %d.%d-%d.%d\r\n", s, inFileLoc(yylloc));
+    return 0;
+}

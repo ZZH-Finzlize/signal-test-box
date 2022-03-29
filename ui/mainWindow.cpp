@@ -2,6 +2,7 @@
 #include <cmath>
 #include <QMessageBox>
 #include <QDebug>
+#include "grammar.tab.hpp"
 using namespace QtCharts;
 
 MainWindow::MainWindow(QWidget* parent) : QMainWindow(parent), sigSuffix(0)
@@ -18,6 +19,8 @@ MainWindow::MainWindow(QWidget* parent) : QMainWindow(parent), sigSuffix(0)
     connect(ui.actDelSig, &QAction::triggered, this, &MainWindow::delSignal);
 
     connect(ui.pSignalList, &QListWidget::currentItemChanged, this, &MainWindow::enableExpress);
+
+    connect(ui.pCalculateButton, &QPushButton::clicked, this, &MainWindow::calculateCurSig);
 }
 
 MainWindow::~MainWindow()
@@ -73,4 +76,16 @@ void MainWindow::signalExpEditDone(void)
     {
         curItem->setData(this->signalExpressRole, ui.pSignalExpress->toPlainText());
     }
+}
+
+void MainWindow::calculateCurSig(void)
+{
+    yylex();
+    ui.pSignalChart->chart()->removeAllSeries();
+    auto series = new QSplineSeries();
+    for (calPoint = 0;calPoint < 100;calPoint++)
+    {   
+        series->append(calPoint, root->calculate());
+    }
+    ui.pSignalChart->chart()->addSeries(series);
 }
