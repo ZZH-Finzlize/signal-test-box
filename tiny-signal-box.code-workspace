@@ -95,7 +95,7 @@
     "launch": {
         "configurations": [
             {
-                "name": "main.debug",
+                "name": "main.home",
                 "type": "cppdbg",
                 "request": "launch",
                 "program": "${workspaceFolder}/build/signalBox.exe",
@@ -106,6 +106,26 @@
                 "externalConsole": true,
                 "MIMode": "gdb",
                 "miDebuggerPath": "D:/Qt/Tools/mingw730_32/bin/gdb.exe",
+                "setupCommands": [
+                    {
+                        "description": "为 gdb 启用整齐打印",
+                        "text": "-enable-pretty-printing",
+                        "ignoreFailures": true
+                    }
+                ]
+            },
+            {
+                "name": "main.work",
+                "type": "cppdbg",
+                "request": "launch",
+                "program": "${workspaceFolder}/build/signalBox.exe",
+                "args": [],
+                // "stopAtEntry": true,
+                "cwd": "${workspaceFolder}/build",
+                "environment": [],
+                "externalConsole": true,
+                "MIMode": "gdb",
+                "miDebuggerPath": "D:/Qt5.12.12/Tools/mingw730_32/bin/gdb.exe",
                 "setupCommands": [
                     {
                         "description": "为 gdb 启用整齐打印",

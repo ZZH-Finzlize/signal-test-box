@@ -22,9 +22,12 @@ private:
 protected:
     Ui::MainWindow ui;
     static const int signalExpressRole = Qt::UserRole + 2;
+    int calNum;
 public:
     MainWindow(QWidget* parent = nullptr);
     ~MainWindow();
+
+    static const float fsScale[3];
 
     void addSignal(void);
     void delSignal(void);

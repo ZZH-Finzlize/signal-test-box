@@ -44,22 +44,28 @@ public:
     ASTFunctionCall_t(calFunc_t fun, QList<ASTExpress_t*>* args) :Calcb(fun), args(args) {}
     virtual ~ASTFunctionCall_t()
     {
-        for (auto exp : *args)
-            delete exp;
+        if (this->args)
+        {
+            for (auto exp : *args)
+                delete exp;
 
-        delete this->args;
+            delete this->args;
+        }
     }
 
     virtual float calculate(void) const override
     {
-        auto argLen = args->length();
-        if (0 != argLen)
+        if (nullptr != this->args)
         {
-            float* pArgs = new float[argLen];
-            for (int i = 0;i < argLen;i++)
-                pArgs[i] = args->at(i)->calculate();
+            auto argLen = args->length();
+            if (0 != argLen)
+            {
+                float* pArgs = new float[argLen];
+                for (int i = 0;i < argLen;i++)
+                    pArgs[i] = args->at(i)->calculate();
 
-            return Calcb(pArgs);
+                return Calcb(pArgs);
+            }
         }
 
         return Calcb(nullptr);
@@ -137,3 +143,4 @@ public:
 
 extern ASTExpress_t* root;
 extern QString textToParse;
+extern float fs;

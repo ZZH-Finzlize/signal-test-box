@@ -3,7 +3,10 @@
 #include <QMessageBox>
 #include <QDebug>
 #include "grammar.tab.hpp"
+#include "innerFun.h"
 using namespace QtCharts;
+//                                    HZ  KHZ    MHZ
+const float MainWindow::fsScale[3] = {1, 1000, 1000000};
 
 MainWindow::MainWindow(QWidget* parent) : QMainWindow(parent), sigSuffix(0)
 {
@@ -14,6 +17,7 @@ MainWindow::MainWindow(QWidget* parent) : QMainWindow(parent), sigSuffix(0)
     pChart->setAnimationOptions(QChart::AllAnimations);
     ui.pSignalChart->setChart(pChart);
     ui.pSignalList->addActions({ ui.actNewSig, ui.actDelSig });
+    this->calNum = ui.pCalNum->text().toInt();
 
     connect(ui.actNewSig, &QAction::triggered, this, &MainWindow::addSignal);
     connect(ui.actDelSig, &QAction::triggered, this, &MainWindow::delSignal);
@@ -21,6 +25,22 @@ MainWindow::MainWindow(QWidget* parent) : QMainWindow(parent), sigSuffix(0)
     connect(ui.pSignalList, &QListWidget::currentItemChanged, this, &MainWindow::enableExpress);
 
     connect(ui.pCalculateButton, &QPushButton::clicked, this, &MainWindow::calculateCurSig);
+    connect(ui.pCalNum, &QLineEdit::editingFinished, this, [this]() {
+        ui.pCalNum->blockSignals(true);
+        int newValue = ui.pCalNum->text().toInt();
+        if (newValue > 4096 || newValue <= 0)
+        {
+            QMessageBox::critical(this, tr("计算点数错误"), tr("%1 值是非法值").arg(newValue));
+            newValue = this->calNum;
+        }
+        else
+        {
+            this->calNum = newValue;
+        }
+
+        // ui.pCalNum->setText(QString("%1").arg(newValue));
+        ui.pCalNum->blockSignals(false);
+    });
 }
 
 MainWindow::~MainWindow()
@@ -61,7 +81,10 @@ void MainWindow::on_pSignalList_currentItemChanged(QListWidgetItem* current, QLi
     //载入下一个
     if (nullptr != current)
     {
-        ui.pSignalExpress->setPlainText(current->data(this->signalExpressRole).toString());
+        const QString &expr = current->data(this->signalExpressRole).toString();
+        ui.pSignalExpress->setPlainText(expr);
+        if(not expr.isEmpty())
+            this->calculateCurSig();
     }
     else
     {
@@ -81,6 +104,7 @@ void MainWindow::signalExpEditDone(void)
 void MainWindow::calculateCurSig(void)
 {
     textToParse = ui.pSignalExpress->toPlainText();
+    fs = ui.pFs->text().toFloat() * this->fsScale[ui.pFsScale->currentIndex()];
     yyparse();
     if (nullptr == root)
     {
@@ -88,9 +112,10 @@ void MainWindow::calculateCurSig(void)
         return;
     }
     
+    resetInnerFun();
     ui.pSignalChart->chart()->removeAllSeries();
     auto series = new QSplineSeries();
-    for (calPoint = 0;calPoint < 100;calPoint++)
+    for (calPoint = 0;calPoint < this->calNum;calPoint++)
     {
         series->append(calPoint, root->calculate());
     }

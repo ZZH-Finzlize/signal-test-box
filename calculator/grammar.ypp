@@ -5,7 +5,9 @@
 #include <math.h>
 #include <stdlib.h>
 #include "ast.h"
+#include <QtCore>
 #include <QMap>
+#include <QMessageBox>
 #include "symTable.h"
 
 %}
@@ -68,22 +70,13 @@ signal_exp: '(' signal_exp ')' {$$ = $2;}
 
 func_call: "symbol" '(' arg_list ')' {
     ASTFunctionCall_t::calFunc_t find_func = nullptr;
-    $$ = nullptr;
-    if(FunSymTable.search($1, find_func))
-    {
-        $$ = new ASTFunctionCall_t(find_func, $3);
-        printf("found func %s - address: 0x%p\r\n", $1, find_func);
-    }
-    else
-    {
-        printf("not found func %s\r\n", $1);
-        free($1);
-        exit(-1);
-    }
+    bool res = FunSymTable.search($1, find_func);
     free($1);
+    $$ = res ? new ASTFunctionCall_t(find_func, $3) : nullptr;
 }
 
-arg_list: signal_exp {$$ = new QList<ASTExpress_t*>(); $$->append($1);}
+arg_list: {$$ = nullptr;}
+    |signal_exp {$$ = new QList<ASTExpress_t*>(); $$->append($1);}
     |arg_list ',' signal_exp {$$ = $1; $$->append($3);}
 
 /* constant_exp: "number"
@@ -99,6 +92,9 @@ arg_list: signal_exp {$$ = new QList<ASTExpress_t*>(); $$->append($1);}
 
 int yyerror(char* s)
 {
-    printf("error occor:%s : %d.%d-%d.%d\r\n", s, inFileLoc(yylloc));
+    /* printf("error occor:%s : %d.%d-%d.%d\r\n", s, inFileLoc(yylloc)); */
+    QMessageBox::critical(nullptr, QString::fromUtf8(s), 
+    QString::fromUtf8("位于 %1.%2-%3.%4").arg(yylloc.first_line).arg(yylloc.first_column).arg(yylloc.last_line).arg(yylloc.last_column)
+    );
     return 0;
 }
