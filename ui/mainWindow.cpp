@@ -18,6 +18,8 @@ MainWindow::MainWindow(QWidget* parent) : QMainWindow(parent), sigSuffix(0)
     pChart->setAnimationOptions(QChart::AllAnimations);
     pChart->setBackgroundVisible();
     pChart->autoFillBackground();
+    pChart->addAxis(new QValueAxis(), Qt::AlignBottom);
+    pChart->addAxis(new QValueAxis(), Qt::AlignLeft);
     ui.pSignalChart->setChart(pChart);
     ui.pSignalList->addActions({ ui.actNewSig, ui.actDelSig });
     this->calNum = ui.pCalNum->text().toInt();
@@ -130,14 +132,27 @@ void MainWindow::calculateCurSig(void)
         {
             float maxValue, minValue;
             resetInnerFun();
-            ui.pSignalChart->chart()->removeAllSeries();
+            auto pChart = ui.pSignalChart->chart();
+            pChart->removeAllSeries();
+            
             auto series = new QSplineSeries();
             for (calPoint = 0;calPoint < this->calNum;calPoint++)
             {
-                series->append(calPoint, root->calculate());
+                float curValue = root->calculate();
+                maxValue = __max(curValue, maxValue);
+                minValue = __min(curValue, minValue);
+                series->append(calPoint, curValue);
             }
             series->setName(ui.pSignalList->currentItem()->text());
-            ui.pSignalChart->chart()->addSeries(series);
+            
+            auto axisX = pChart->axes(Qt::Horizontal)[0];
+            auto axisY = pChart->axes(Qt::Vertical)[0];
+            axisX->setRange(0, this->calNum);
+            axisY->setRange(minValue * 1.15, maxValue * 1.15);
+            
+            pChart->addSeries(series);
+            series->attachAxis(axisX);
+            series->attachAxis(axisY);
         }
     }
 

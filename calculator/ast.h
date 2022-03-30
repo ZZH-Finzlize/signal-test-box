@@ -101,8 +101,6 @@ public:
                 res &= exp->compile();
             }
         }
-        else
-            res = false;
 
         return res;
     }
