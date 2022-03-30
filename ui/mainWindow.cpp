@@ -29,7 +29,9 @@ MainWindow::MainWindow(QWidget* parent) : QMainWindow(parent), sigSuffix(0)
 
     connect(ui.pCalculateButton, &QPushButton::clicked, this, &MainWindow::calculateCurSig);
     connect(ui.pCalNum, &QLineEdit::editingFinished, this, [this]() {
+        //这里要屏蔽掉输入框的信号,因为下面的MessageBox会获取输入焦点,所以会再次触发editingFinished
         ui.pCalNum->blockSignals(true);
+        
         int newValue = ui.pCalNum->text().toInt();
         if (newValue > 4096 || newValue <= 0)
         {
@@ -41,6 +43,7 @@ MainWindow::MainWindow(QWidget* parent) : QMainWindow(parent), sigSuffix(0)
             this->calNum = newValue;
         }
 
+        //这里究竟是保持当前编辑值还是恢复上一次的正确值,两种策略好像都合理,暂定保持编辑值
         // ui.pCalNum->setText(QString("%1").arg(newValue));
         ui.pCalNum->blockSignals(false);
     });

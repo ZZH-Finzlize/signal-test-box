@@ -58,7 +58,8 @@ extern int yyerrorCount;
 
 %%
 
-signal: signal_exp {root = $1;}
+signal: {root = nullptr;}
+    |signal_exp {root = $1;}
 
 signal_exp: '(' signal_exp ')' {$$ = $2;}
     |signal_exp '+' signal_exp {$$ = new ASTOperator_t('+', $1, $3);}

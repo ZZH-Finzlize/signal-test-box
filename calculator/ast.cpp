@@ -23,18 +23,10 @@ bool ASTSignal_t::compile(void)
         if (yyerrorCount == 0 || nullptr != root)
         {
             this->subRoot = root;
-            if(root->compile())
+            if (root->compile())
             {
                 res = true;
             }
-            else
-            {
-                res = false;
-            }
-        }
-        else
-        {
-            res = false;
         }
     }
 
