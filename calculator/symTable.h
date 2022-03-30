@@ -43,7 +43,6 @@ public:
         if (it != this->table.end())
         {
             this->table.erase(it);
-            delete it.value();
             return true;
         }
         return false;
@@ -61,22 +60,23 @@ public:
     }
 };
 
-class SigSymTable_t :public SymTable_t<ASTExpress_t*>
-{
-private:
+// class SigSymTable_t :public SymTable_t<QListWidgetItem*>
+// {
+// private:
 
-protected:
+// protected:
 
-public:
-    SigSymTable_t() {}
-    ~SigSymTable_t()
-    {
-        for (auto it : this->table)
-            delete it;
-    }
-};
+// public:
+//     SigSymTable_t() {}
+//     ~SigSymTable_t()
+//     {
+//         for (auto it : this->table)
+//             delete it;
+//     }
+// };
 
 using FunSymTable_t = SymTable_t<ASTFunctionCall_t::calFunc_t>;
+using SigSymTable_t = SymTable_t<QListWidgetItem*>;
 
 extern SigSymTable_t SigSymTable;
 extern FunSymTable_t FunSymTable;

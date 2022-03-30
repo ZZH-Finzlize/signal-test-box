@@ -21,9 +21,10 @@ private:
     const QString sigName = "signal%1";
 protected:
     Ui::MainWindow ui;
-    static const int signalExpressRole = Qt::UserRole + 2;
+    
     int calNum;
 public:
+    static const int signalExpressRole = Qt::UserRole + 2;
     MainWindow(QWidget* parent = nullptr);
     ~MainWindow();
 

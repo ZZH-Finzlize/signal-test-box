@@ -2,6 +2,7 @@
 #include <QtCore>
 #include <QString>
 #include <QList>
+#include <QListWidgetItem>
 #include <cmath>
 extern uint32_t calPoint;
 extern float fs;
@@ -17,19 +18,34 @@ public:
     virtual ~ASTExpress_t() {}
 
     virtual float calculate(void) const = 0;
+    virtual bool compile(void) { return true; }//用于动态编译引用的其他信号
 };
 
-// class ASTSignal_t : public ASTExpress_t
-// {
-// private:
-// protected:
-//     const char* sigName;
-// public:
-//     ASTSignal_t() {}
-//     ~ASTSignal_t() {}
+class ASTSignal_t : public ASTExpress_t
+{
+private:
+protected:
+    QString sigName;
+    ASTExpress_t* subRoot;
+public:
+    ASTSignal_t(char* name):sigName(name), subRoot(nullptr) {}
+    ~ASTSignal_t()
+    {
+        if(nullptr != this->subRoot)
+            delete this->subRoot;
+    }
 
-//     virtual float calculate(void) const override;
-// };
+    virtual float calculate(void) const override
+    {
+        if (nullptr != this->subRoot)
+        {
+            return this->subRoot->calculate();
+        }
+        return 0;
+    }
+    
+    virtual bool compile(void) override;
+};
 
 class ASTFunctionCall_t : public ASTExpress_t
 {
@@ -70,6 +86,22 @@ public:
         }
 
         return Calcb(nullptr);
+    }
+
+    virtual bool compile(void) override
+    {
+        bool res = true;
+        if (nullptr != this->args)
+        {
+            for (auto exp : *args)
+            {
+                res &= exp->compile();
+            }
+        }
+        else
+            res = false;
+
+        return res;
     }
 };
 
@@ -142,7 +174,12 @@ public:
             case '^':
                 return powf(lVal, rVal);
         }
-    };
+    }
+
+    virtual bool compile(void) override
+    {
+        return this->left->compile() && this->right->compile();
+    }
 };
 
 extern ASTExpress_t* root;
