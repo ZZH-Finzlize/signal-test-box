@@ -1,38 +1,48 @@
 #include "ast.h"
 #include "symTable.h"
 #include "grammar.tab.hpp"
+#include <QMessageBox>
 ASTExpress_t* root;
 uint32_t calPoint;
 float fs = 0.01;
 QString textToParse;
 
+int ASTExpress_t::recursionCount = 0;
+
 bool ASTSignal_t::compile(void)
 {
-    // int savedLineno = yylineno;
-    // int savederrno = yyerrorCount;
-    ASTExpress_t* savedRoot = root;
     bool res = false;
-    QListWidgetItem* item;
-
-    res = SigSymTable.search(this->sigName, item);
-    if (res)
+    if (this->getRecCounter() < 15)
     {
-        textToParse = item->data(Qt::UserRole + 2).toString();
-        resetParser();
-        yyparse();
-        if (yyerrorCount == 0 || nullptr != root)
+        this->recursionCount++;
+        ASTExpress_t* savedRoot = root;
+        QListWidgetItem* item;
+
+        res = SigSymTable.search(this->sigName, item);
+        if (res)
         {
-            this->subRoot = root;
-            if (root->compile())
+            textToParse = item->data(Qt::UserRole + 2).toString();
+            if (not textToParse.isEmpty())
             {
-                res = true;
+                resetParser();
+                yyparse();
+                if (yyerrorCount == 0 || nullptr != root)
+                {
+                    this->subRoot = root;
+                    if (root->compile())
+                    {
+                        res = true;
+                    }
+                }
             }
         }
-    }
 
-    // yylineno = savedLineno;
-    // yyerrorCount = savederrno;
-    root = savedRoot;
+        root = savedRoot;
+    }
+    else
+    {
+        QMessageBox::critical(nullptr, QString::fromUtf8("递归终止"), QString::fromUtf8("变量嵌套层数超过最大限制,最大值为15,请检查信号表达式是否存在循环引用或使用了太多嵌套"));
+    }
 
     return res;
 }

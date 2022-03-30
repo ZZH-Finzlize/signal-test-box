@@ -10,12 +10,15 @@ extern float fs;
 class ASTExpress_t
 {
 private:
-
-protected://= 45 * sin(t / 12) + 15 + 32
-
+    
+protected:
+    static int recursionCount;
+    
 public:
     ASTExpress_t() {}
     virtual ~ASTExpress_t() {}
+    static inline void resetRecCounter(int initVal = 0) { recursionCount = initVal; }
+    static inline int getRecCounter() { return recursionCount; }
 
     virtual float calculate(void) const = 0;
     virtual bool compile(void) { return true; }//用于动态编译引用的其他信号

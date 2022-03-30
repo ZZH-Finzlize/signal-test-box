@@ -125,9 +125,10 @@ void MainWindow::calculateCurSig(void)
         // QVector<float> dataArray(this->calNum);
         // QList<float> dataArray1;
         // dataArray1.fromVector(dataArray);
-
+        root->resetRecCounter();
         if (root->compile())
         {
+            float maxValue, minValue;
             resetInnerFun();
             ui.pSignalChart->chart()->removeAllSeries();
             auto series = new QSplineSeries();
