@@ -9,7 +9,7 @@
 #include <QMap>
 #include <QMessageBox>
 #include "symTable.h"
-
+int yyerrorCount = 0;
 %}
 
 %code requires
@@ -18,7 +18,10 @@
 #define inFileLoc(arg) arg.first_line, arg.first_column, arg.last_line, arg.last_column
 extern int yylex (void);
 extern int yyerror(char* s);
+inline int yyerror(const char* s) {return yyerror(const_cast<char*>(s));}//内联重载yyerror,消除const char*类型参数警告
+extern void resetParser();
 extern size_t yycolumn;
+extern int yyerrorCount;
 }
 
 %union{
@@ -73,7 +76,22 @@ func_call: "symbol" '(' arg_list ')' {
     ASTFunctionCall_t::calFunc_t find_func = nullptr;
     bool res = FunSymTable.search($1, find_func);
     free($1);
-    $$ = res ? new ASTFunctionCall_t(find_func, $3) : nullptr;
+    if(true == res)
+    {
+        $$ = new ASTFunctionCall_t(find_func, $3);
+    }
+    else
+    {
+        $$ = nullptr;
+        if(nullptr != $3)
+        {
+            for(auto it: *$3)
+                delete it;
+
+            delete $3;
+        }
+        yyerror("undefind function");
+    }
 }
 
 arg_list: {$$ = nullptr;}
@@ -97,5 +115,12 @@ int yyerror(char* s)
     QMessageBox::critical(nullptr, QString::fromUtf8(s), 
     QString::fromUtf8("位于 %1.%2-%3.%4").arg(yylloc.first_line).arg(yylloc.first_column).arg(yylloc.last_line).arg(yylloc.last_column)
     );
+    yyerrorCount++;
     return 0;
+}
+
+void resetParser()
+{
+    yycolumn = 1;
+    yyerrorCount = 0;
 }

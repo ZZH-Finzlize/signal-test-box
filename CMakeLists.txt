@@ -40,7 +40,7 @@ add_custom_target(bc
     DEPENDS ${PROJECT_SOURCE_DIR}/calculator/scanner.l fc
     BYPRODUCTS ${bison_file}
     SOURCES ${PROJECT_SOURCE_DIR}/calculator/grammar.ypp
-    COMMAND bison --debug --token-table -d -Wcex grammar.ypp -o ${PROJECT_BINARY_DIR}/grammar.tab.cpp
+    COMMAND bison --debug --no-lines --token-table -d -Wcex grammar.ypp -o ${PROJECT_BINARY_DIR}/grammar.tab.cpp
     WORKING_DIRECTORY ${PROJECT_SOURCE_DIR}/calculator/
     COMMENT "bison build"
 )

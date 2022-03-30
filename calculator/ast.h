@@ -111,8 +111,11 @@ public:
     ASTOperator_t(char op, ASTExpress_t* l, ASTExpress_t* r) :op(op), left(l), right(r) {}
     virtual ~ASTOperator_t()
     {
-        delete this->left;
-        delete this->right;
+        if (nullptr != this->left)
+            delete this->left;
+
+        if (nullptr != this->right)
+            delete this->right;
     }
 
     virtual float calculate(void) const override

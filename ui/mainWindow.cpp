@@ -6,7 +6,7 @@
 #include "innerFun.h"
 using namespace QtCharts;
 //                                    HZ  KHZ    MHZ
-const float MainWindow::fsScale[3] = {1, 1000, 1000000};
+const float MainWindow::fsScale[3] = { 1, 1000, 1000000 };
 
 MainWindow::MainWindow(QWidget* parent) : QMainWindow(parent), sigSuffix(0)
 {
@@ -83,9 +83,9 @@ void MainWindow::on_pSignalList_currentItemChanged(QListWidgetItem* current, QLi
     //载入下一个
     if (nullptr != current)
     {
-        const QString &expr = current->data(this->signalExpressRole).toString();
+        const QString& expr = current->data(this->signalExpressRole).toString();
         ui.pSignalExpress->setPlainText(expr);
-        if(not expr.isEmpty())
+        if (not expr.isEmpty())
             this->calculateCurSig();
     }
     else
@@ -107,27 +107,29 @@ void MainWindow::calculateCurSig(void)
 {
     textToParse = ui.pSignalExpress->toPlainText();
     fs = ui.pFs->text().toFloat() * this->fsScale[ui.pFsScale->currentIndex()];
-    yycolumn = 1;
+    resetParser();
     yyparse();
-    if (nullptr == root)
-    {
-        qDebug() << "parse fail";
-        return;
-    }
-    // QVector<float> dataArray(this->calNum);
-    // QList<float> dataArray1;
-    // dataArray1.fromVector(dataArray);
     
-
-    resetInnerFun();
-    ui.pSignalChart->chart()->removeAllSeries();
-    auto series = new QSplineSeries();
-    for (calPoint = 0;calPoint < this->calNum;calPoint++)
+    if (yyerrorCount == 0 || nullptr != root)
     {
-        series->append(calPoint, root->calculate());
+        // QVector<float> dataArray(this->calNum);
+        // QList<float> dataArray1;
+        // dataArray1.fromVector(dataArray);
+
+        resetInnerFun();
+        ui.pSignalChart->chart()->removeAllSeries();
+        auto series = new QSplineSeries();
+        for (calPoint = 0;calPoint < this->calNum;calPoint++)
+        {
+            series->append(calPoint, root->calculate());
+        }
+        series->setName(ui.pSignalList->currentItem()->text());
+        ui.pSignalChart->chart()->addSeries(series);
     }
-    series->setName(ui.pSignalList->currentItem()->text());
-    delete root;
-    root = nullptr;
-    ui.pSignalChart->chart()->addSeries(series);
+
+    if (nullptr != root)
+    {
+        delete root;
+        root = nullptr;
+    }
 }
