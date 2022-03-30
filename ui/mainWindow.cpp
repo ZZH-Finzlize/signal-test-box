@@ -100,6 +100,7 @@ void MainWindow::on_pSignalList_currentItemChanged(QListWidgetItem* current, QLi
     else
     {
         ui.pSignalExpress->clear();
+        ui.pSignalChart->chart()->removeAllSeries();
     }
 }
 
