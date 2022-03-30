@@ -15,6 +15,8 @@ MainWindow::MainWindow(QWidget* parent) : QMainWindow(parent), sigSuffix(0)
 
     auto pChart = new QChart();
     pChart->setAnimationOptions(QChart::AllAnimations);
+    pChart->setBackgroundVisible();
+    pChart->autoFillBackground();
     ui.pSignalChart->setChart(pChart);
     ui.pSignalList->addActions({ ui.actNewSig, ui.actDelSig });
     this->calNum = ui.pCalNum->text().toInt();
@@ -105,13 +107,18 @@ void MainWindow::calculateCurSig(void)
 {
     textToParse = ui.pSignalExpress->toPlainText();
     fs = ui.pFs->text().toFloat() * this->fsScale[ui.pFsScale->currentIndex()];
+    yycolumn = 1;
     yyparse();
     if (nullptr == root)
     {
         qDebug() << "parse fail";
         return;
     }
+    // QVector<float> dataArray(this->calNum);
+    // QList<float> dataArray1;
+    // dataArray1.fromVector(dataArray);
     
+
     resetInnerFun();
     ui.pSignalChart->chart()->removeAllSeries();
     auto series = new QSplineSeries();

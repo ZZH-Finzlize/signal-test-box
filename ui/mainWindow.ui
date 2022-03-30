@@ -53,6 +53,9 @@
         <property name="maximum">
          <double>1000.000000000000000</double>
         </property>
+        <property name="value">
+         <double>1.000000000000000</double>
+        </property>
        </widget>
       </item>
       <item>
@@ -93,7 +96,7 @@
       <item>
        <widget class="QLabel" name="label_4">
         <property name="text">
-         <string>计算点数:</string>
+         <string>采样点数:</string>
         </property>
        </widget>
       </item>
@@ -116,6 +119,9 @@
           <width>50</width>
           <height>16777215</height>
          </size>
+        </property>
+        <property name="toolTip">
+         <string>出于性能考虑,采样点数目前最多4096,更大的值极有可能造成卡死</string>
         </property>
         <property name="text">
          <string>1024</string>

@@ -14,7 +14,7 @@
 #include <cstring>
 #include "math.h"
 using namespace std;
-static size_t yycolumn = 1;
+size_t yycolumn = 1;
 void recordLocInfo(void)
 {
     yylloc.first_line = yylineno;

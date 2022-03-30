@@ -4,6 +4,7 @@
 #include <QList>
 #include <cmath>
 extern uint32_t calPoint;
+extern float fs;
 
 class ASTExpress_t
 {
@@ -95,7 +96,7 @@ public:
     ASTTime_t() {}
     virtual ~ASTTime_t() {}
 
-    virtual float calculate(void) const override { return calPoint / 15.0; }
+    virtual float calculate(void) const override { return calPoint / fs; }
 };
 
 class ASTOperator_t :public ASTExpress_t
@@ -143,4 +144,3 @@ public:
 
 extern ASTExpress_t* root;
 extern QString textToParse;
-extern float fs;
