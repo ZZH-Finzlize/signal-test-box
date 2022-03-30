@@ -59,7 +59,7 @@ void MainWindow::addSignal(void)
 {
     QString itemName = this->sigName.arg(this->sigSuffix++);
     auto newItem = new QListWidgetItem(itemName);
-    newItem->setFlags(newItem->flags() | Qt::ItemIsEditable);
+    // newItem->setFlags(newItem->flags() | Qt::ItemIsEditable);
     ui.pSignalList->addItem(newItem);
     SigSymTable.insert(itemName, newItem);
 }
