@@ -40,7 +40,7 @@ int user_input(char* buf, int max_size)
 #define YY_INPUT(buf,result,max_size) {result = user_input(buf, max_size);}
 %}
 
-NormalChar      [\+\-\*\/\(\)=<>^%]
+NormalChar      [\+\-\*\/\(\)<>^%]
 Number          [0-9]
 HexNum          0x[0-9a-fA-F]+
 Symbol          [a-zA-Z_]*[a-zA-Z0-9]+

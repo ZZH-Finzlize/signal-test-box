@@ -196,7 +196,7 @@ void MainWindow::calculateCurSig(void)
             auto axisX = pChart->axes(Qt::Horizontal)[0];
             auto axisY = pChart->axes(Qt::Vertical)[0];
             axisX->setRange(0, this->calNum);
-            axisY->setRange(minValue * 1.15, maxValue * 1.15);
+            axisY->setRange(minValue * 1.15 - 0.25, maxValue * 1.15);
 
             pChart->addSeries(series);
             series->attachAxis(axisX);

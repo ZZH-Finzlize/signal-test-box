@@ -174,6 +174,12 @@ public:
 
             case '^':
                 return powf(lVal, rVal);
+
+            case '>':
+                return lVal > rVal ? 1 : 0;
+
+            case '<':
+                return lVal < rVal ? 1 : 0;
         }
     }
 
