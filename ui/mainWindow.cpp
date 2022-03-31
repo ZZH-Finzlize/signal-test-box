@@ -2,12 +2,15 @@
 #include <cmath>
 #include <QMessageBox>
 #include <QDebug>
-#include "grammar.tab.hpp"
 #include "symTable.h"
 #include "innerFun.h"
+#include "compile_common.h"
+
 using namespace QtCharts;
 //                                    HZ  KHZ    MHZ
 const float MainWindow::fsScale[3] = { 1, 1000, 1000000 };
+//此处的正则和词法分析器对symbol的要求一致
+const QRegExp MainWindow::sigNameRule("[a-zA-Z_]+[a-zA-Z0-9]*");
 
 MainWindow::MainWindow(QWidget* parent) : QMainWindow(parent), sigSuffix(0)
 {
@@ -24,16 +27,19 @@ MainWindow::MainWindow(QWidget* parent) : QMainWindow(parent), sigSuffix(0)
     ui.pSignalList->addActions({ ui.actNewSig, ui.actDelSig });
     this->calNum = ui.pCalNum->text().toInt();
 
+    ui.pCalNum->setValidator(new QRegExpValidator(QRegExp("\\d+")));
+
     connect(ui.actNewSig, &QAction::triggered, this, &MainWindow::addSignal);
     connect(ui.actDelSig, &QAction::triggered, this, &MainWindow::delSignal);
 
     connect(ui.pSignalList, &QListWidget::currentItemChanged, this, &MainWindow::enableExpress);
 
     connect(ui.pCalculateButton, &QPushButton::clicked, this, &MainWindow::calculateCurSig);
+    connect(ui.pSignalList, &QListWidget::itemChanged, this, &MainWindow::itemChanged);
     connect(ui.pCalNum, &QLineEdit::editingFinished, this, [this]() {
         //这里要屏蔽掉输入框的信号,因为下面的MessageBox会获取输入焦点,所以会再次触发editingFinished
         ui.pCalNum->blockSignals(true);
-        
+
         int newValue = ui.pCalNum->text().toInt();
         if (newValue > 4096 || newValue <= 0)
         {
@@ -59,22 +65,37 @@ void MainWindow::addSignal(void)
 {
     QString itemName = this->sigName.arg(this->sigSuffix++);
     auto newItem = new QListWidgetItem(itemName);
-    // newItem->setFlags(newItem->flags() | Qt::ItemIsEditable);
+    newItem->setFlags(newItem->flags() | Qt::ItemIsEditable);
     ui.pSignalList->addItem(newItem);
-    SigSymTable.insert(itemName, newItem);
+
+    if (SigSymTable.insert(itemName, newItem))
+    {
+        this->curItemText = itemName;
+        qDebug() << "add new sig " << itemName << "to symTable and update curItemText";
+    }
+    else
+    {
+        QMessageBox::critical(this, tr("名称重复"), tr("此名称与现有另一信号重名"));
+    }
+
+    ui.pSignalList->editItem(newItem);
+
 }
 
 void MainWindow::delSignal(void)
 {
-    auto itemToDel =  ui.pSignalList->takeItem(ui.pSignalList->currentRow());
+    auto itemToDel = ui.pSignalList->takeItem(ui.pSignalList->currentRow());
     if (ui.pSignalList->currentRow() == -1)//若删除后当前选择项非法,则重新进入禁止编辑表达式的状态
     {
         connect(ui.pSignalList, &QListWidget::currentItemChanged, this, &MainWindow::enableExpress);
         ui.pSignalExpress->setDisabled(true);
     }
 
-    SigSymTable.remove(itemToDel->text());
-    delete itemToDel;
+    if (itemToDel)
+    {
+        SigSymTable.remove(itemToDel->text());
+        delete itemToDel;
+    }
 }
 
 void MainWindow::enableExpress(void)
@@ -88,7 +109,7 @@ void MainWindow::on_pSignalList_currentItemChanged(QListWidgetItem* current, QLi
     //保存上一个
     if (nullptr != previous)
     {
-        previous->setData(this->signalExpressRole, ui.pSignalExpress->toPlainText());
+        this->saveExpToItem(previous, ui.pSignalExpress->toPlainText());
     }
 
     //载入下一个
@@ -98,26 +119,53 @@ void MainWindow::on_pSignalList_currentItemChanged(QListWidgetItem* current, QLi
         ui.pSignalExpress->setPlainText(expr);
         if (not expr.isEmpty())
             this->calculateCurSig();
+        else
+            ui.pSignalChart->chart()->removeAllSeries();
+        this->curItemText = current->text();
     }
     else
     {
+        qDebug() << "invaild selection clear curItemText";
+        this->curItemText.clear();
         ui.pSignalExpress->clear();
         ui.pSignalChart->chart()->removeAllSeries();
     }
 }
 
-void MainWindow::signalExpEditDone(void)
+void MainWindow::itemChanged(QListWidgetItem* item)
 {
-    auto curItem = ui.pSignalList->currentItem();
-    if (nullptr != curItem)
+    if (not this->curItemText.isEmpty())
     {
-        curItem->setData(this->signalExpressRole, ui.pSignalExpress->toPlainText());
+        const QString& newName = item->text();
+        if (this->sigNameRule.exactMatch(newName))//新的信号名称符合要求
+        {
+            qDebug() << "item changed from:" << this->curItemText << " to: " << newName;
+            SigSymTable.remove(this->curItemText);
+            this->curItemText = newName;
+            if (SigSymTable.insert(this->curItemText, item))
+            {
+                return;
+            }
+            else
+            {
+                QMessageBox::critical(this, tr("名称重复"), tr("此名称与现有另一信号重名"));
+            }
+        }
+        else
+        {
+            QMessageBox::critical(this, tr("名称非法"), tr("此名称不符合信号命名规则"));
+        }
+
+        ui.pSignalList->blockSignals(true);
+        item->setText(this->curItemText);
+        ui.pSignalList->blockSignals(false);
     }
 }
 
 void MainWindow::calculateCurSig(void)
 {
     textToParse = ui.pSignalExpress->toPlainText();
+    this->saveExpToItem(ui.pSignalList->currentItem(), textToParse);
     fs = ui.pFs->text().toFloat() * this->fsScale[ui.pFsScale->currentIndex()];
     resetParser();
     yyparse();
@@ -144,12 +192,12 @@ void MainWindow::calculateCurSig(void)
                 series->append(calPoint, curValue);
             }
             series->setName(ui.pSignalList->currentItem()->text());
-            
+
             auto axisX = pChart->axes(Qt::Horizontal)[0];
             auto axisY = pChart->axes(Qt::Vertical)[0];
             axisX->setRange(0, this->calNum);
             axisY->setRange(minValue * 1.15, maxValue * 1.15);
-            
+
             pChart->addSeries(series);
             series->attachAxis(axisX);
             series->attachAxis(axisY);

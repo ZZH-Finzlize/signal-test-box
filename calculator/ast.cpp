@@ -1,7 +1,9 @@
 #include "ast.h"
 #include "symTable.h"
-#include "grammar.tab.hpp"
 #include <QMessageBox>
+#include "compile_common.h"
+#include <string>
+
 ASTExpress_t* root;
 uint32_t calPoint;
 float fs = 0.01;
@@ -18,8 +20,7 @@ bool ASTSignal_t::compile(void)
         ASTExpress_t* savedRoot = root;
         QListWidgetItem* item;
 
-        res = SigSymTable.search(this->sigName, item);
-        if (res)
+        if (SigSymTable.search(this->sigName, item))
         {
             textToParse = item->data(Qt::UserRole + 2).toString();
             if (not textToParse.isEmpty())

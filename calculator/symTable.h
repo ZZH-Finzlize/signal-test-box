@@ -13,7 +13,7 @@ public:
     using difference_type = typename Item_t::difference_type;
     // using reverse_iterator = typename Item_t::reverse_iterator;
     // using const_reverse_iterator = typename Item_t::const_reverse_iterator;
-protected:
+public:
     Item_t table;
 
 public:

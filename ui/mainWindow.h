@@ -18,11 +18,21 @@ class MainWindow : public QMainWindow
     Q_OBJECT
 private:
     unsigned int sigSuffix;
-    const QString sigName = "signal%1";
+    const QString sigName = "sig%1";
+    QString curItemText;
+    static const QRegExp sigNameRule;
 protected:
     Ui::MainWindow ui;
     
     int calNum;
+
+    inline void saveExpToItem(QListWidgetItem* item, const QString& text)
+    {
+        ui.pSignalList->blockSignals(true);
+        item->setData(this->signalExpressRole, text);
+        ui.pSignalList->blockSignals(false);
+    }
+
 public:
     static const int signalExpressRole = Qt::UserRole + 2;
     MainWindow(QWidget* parent = nullptr);
@@ -35,9 +45,9 @@ public:
 
     void enableExpress(void);
 
-    void signalExpEditDone(void);
-
     void calculateCurSig(void);
+
+    void itemChanged(QListWidgetItem* item);
 
 public slots:
     void on_pSignalList_currentItemChanged(QListWidgetItem* current, QListWidgetItem *previous);

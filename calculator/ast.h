@@ -179,7 +179,12 @@ public:
 
     virtual bool compile(void) override
     {
-        return this->left->compile() && this->right->compile();
+        if(nullptr != this->left && nullptr != this->right)
+        {
+            return this->left->compile() && this->right->compile();
+        }
+        
+        return false;
     }
 };
 
