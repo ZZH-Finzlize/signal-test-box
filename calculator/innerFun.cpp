@@ -2,6 +2,7 @@
 #include "innerFun.h"
 #include <stdlib.h>
 #include <time.h>
+#include "fftw3.h"
 static float currentMax = 0;
 static float currentMin = 0;
 
@@ -53,4 +54,25 @@ void hrand(QVector<float*>& pArgs, float* output)
     {
         asm volatile("rdrand %0":"=r"(*output));
     }
+}
+
+void __abs(QVector<float*>& pArgs, float* output)
+{
+    float* arg0 = pArgs[0];
+    for (int i = 0;i < allCalNum;i++)
+        output[i] = fabs(arg0[i]);
+}
+
+void __fft(QVector<float*>& pArgs, float* output)
+{
+    float* arg0 = pArgs[0];
+    fftwf_complex* r = (fftwf_complex*) fftwf_malloc(allCalNum * sizeof(fftwf_complex));
+    fftwf_plan p = fftwf_plan_dft_r2c_1d(allCalNum, arg0, r, FFTW_ESTIMATE);
+
+    
+    fftwf_execute(p);
+
+    
+    fftwf_free(r);
+    fftwf_destroy_plan(p);
 }

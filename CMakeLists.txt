@@ -2,7 +2,6 @@ cmake_minimum_required(VERSION 3.21.1)
 project(signalBox VERSION 0.0.1 DESCRIPTION 信号工具箱 LANGUAGES CXX)
 
 find_package(Qt5 COMPONENTS Core Widgets Charts REQUIRED)
-find_package(FFTW3)
 
 set(execName ${PROJECT_NAME})
 
@@ -50,7 +49,6 @@ include_directories(.)
 include_directories(./ui)
 include_directories(./calculator)
 include_directories(${CMAKE_CURRENT_BINARY_DIR})
-include_directories(${FFTW3_INCLUDE_DIRS})
 include_directories(${Qt5Core_INCLUDE_DIRS})
 
 add_definitions(-DCMAKE_PROJ_NAME="${PROJECT_NAME}")
@@ -66,6 +64,6 @@ add_executable(${execName}
 
 set_target_properties(${execName} PROPERTIES AUTOMOC TRUE AUTOUIC TRUE AUTORCC TRUE)
 
-target_link_directories(${execName} PUBLIC ${FFTW3_LIBRARY_DIRS})
+target_link_directories(${execName} PUBLIC .)
 
-target_link_libraries(${execName} ${Qt5Widgets_LIBRARIES} ${Qt5Charts_LIBRARIES} ${FFTW3_LIBRARIES})
+target_link_libraries(${execName} ${Qt5Widgets_LIBRARIES} ${Qt5Charts_LIBRARIES})
