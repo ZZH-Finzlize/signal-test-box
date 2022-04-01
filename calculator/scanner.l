@@ -43,7 +43,7 @@ int user_input(char* buf, int max_size)
 NormalChar      [\+\-\*\/\(\)<>^%]
 Number          [0-9]
 HexNum          0x[0-9a-fA-F]+
-Symbol          [a-zA-Z_]*[a-zA-Z0-9]+
+Symbol          [a-zA-Z_][a-zA-Z0-9_]*
 LineCommit      \/\/.*
 IgnoreChar      [ \t\r]
 %%

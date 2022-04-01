@@ -10,7 +10,7 @@ using namespace QtCharts;
 //                                    HZ  KHZ    MHZ
 const float MainWindow::fsScale[3] = { 1, 1000, 1000000 };
 //此处的正则和词法分析器对symbol的要求一致
-const QRegExp MainWindow::sigNameRule("[a-zA-Z_]+[a-zA-Z0-9]*");
+const QRegExp MainWindow::sigNameRule("[a-zA-Z_][a-zA-Z0-9_]*");
 
 MainWindow::MainWindow(QWidget* parent) : QMainWindow(parent), sigSuffix(0)
 {
@@ -179,24 +179,33 @@ void MainWindow::calculateCurSig(void)
         if (root->compile())
         {
             float maxValue, minValue;
+            allCalNum = this->calNum;
             resetInnerFun();
             auto pChart = ui.pSignalChart->chart();
             pChart->removeAllSeries();
             
-            auto series = new QSplineSeries();
-            for (calPoint = 0;calPoint < this->calNum;calPoint++)
+            root->preCalculateT();
+            float *res = new float[this->calNum];
+            root->calculate(res);
+            root->cleanPreCalT();
+
+            auto series = new QLineSeries();
+            for (int calPoint = 0;calPoint < this->calNum;calPoint++)
             {
-                float curValue = root->calculate();
+                float curValue = res[calPoint];
                 maxValue = __max(curValue, maxValue);
                 minValue = __min(curValue, minValue);
                 series->append(calPoint, curValue);
             }
+            
+            delete[] res;
+            
             series->setName(ui.pSignalList->currentItem()->text());
 
             auto axisX = pChart->axes(Qt::Horizontal)[0];
             auto axisY = pChart->axes(Qt::Vertical)[0];
             axisX->setRange(0, this->calNum);
-            axisY->setRange(minValue * 1.15 - 0.25, maxValue * 1.15);
+            axisY->setRange(minValue * 1.15 - 1, maxValue * 1.15 + 1);
 
             pChart->addSeries(series);
             series->attachAxis(axisX);

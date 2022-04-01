@@ -5,11 +5,12 @@
 #include <string>
 
 ASTExpress_t* root;
-uint32_t calPoint;
+uint32_t allCalNum;
 float fs = 0.01;
 QString textToParse;
 
 int ASTExpress_t::recursionCount = 0;
+float* ASTExpress_t::pListOfT = nullptr;
 
 bool ASTSignal_t::compile(void)
 {

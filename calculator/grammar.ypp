@@ -10,6 +10,7 @@
 #include <QMessageBox>
 #include "symTable.h"
 int yyerrorCount = 0;
+extern yyrestart(FILE* f);
 %}
 
 %code requires
@@ -146,4 +147,5 @@ void resetParser()
     yylineno = 1;
     yycolumn = 1;
     yyerrorCount = 0;
+    yyrestart(nullptr);
 }
