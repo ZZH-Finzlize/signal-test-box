@@ -12,37 +12,45 @@ void resetInnerFun(void)
     currentMin = 0;
 }
 
-float __sin(const float* f)
+void __sin(QVector<float*>& pArgs, float* output)
 {
-    return sin(*f);
+    float* arg0 = pArgs[0];
+    for (int i = 0;i < allCalNum;i++)
+        output[i] = sin(arg0[i]);
 }
 
-float __cos(const float* f)
+void __cos(QVector<float*>& pArgs, float* output)
 {
-    return cos(*f);
+    float* arg0 = pArgs[0];
+    for (int i = 0;i < allCalNum;i++)
+        output[i] = sin(arg0[i]);
 }
 
-float __rand(const float* f)
+void __rand(QVector<float*>& pArgs, float* output)
 {
-    return rand();
+    for (int i = 0;i < allCalNum;i++)
+        output[i] = rand();
 }
 
-float __inner_max(const float* f)
+void __inner_max(QVector<float*>& pArgs, float* output)
 {
-    currentMax = __max(*f, currentMax);
-    return currentMax;
+    float* arg0 = pArgs[0];
+    for (int i = 0;i < allCalNum;i++)
+        output[i] = __max(arg0[i], currentMax);
 }
 
-float __inner_min(const float* f)
+void __inner_min(QVector<float*>& pArgs, float* output)
 {
-    currentMin = __min(*f, currentMin);
-    return currentMin;
+    float* arg0 = pArgs[0];
+    for (int i = 0;i < allCalNum;i++)
+        output[i] = __min(arg0[i], currentMax);
 }
 
 //使用CPU的rdrand指令产生硬件随机数
-float hrand(const float* f)
+void hrand(QVector<float*>& pArgs, float* output)
 {
-    size_t res;
-    asm volatile("rdrand %0":"=r"(res));
-    return res;
+    for (int i = 0;i < allCalNum;i++)
+    {
+        asm volatile("rdrand %0":"=r"(*output));
+    }
 }

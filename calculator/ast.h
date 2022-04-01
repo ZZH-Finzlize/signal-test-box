@@ -68,7 +68,7 @@ class ASTFunctionCall_t : public ASTExpress_t
 private:
 
 public:
-    typedef float (*calFunc_t)(const float*);
+    typedef void (*calFunc_t)(QVector<float*>& pArgs, float* output);
 
 protected:
     calFunc_t Calcb;
@@ -107,24 +107,7 @@ public:
             }
         }
 
-        if (not pArgs.isEmpty())
-        {
-            int argSize = pArgs.size();
-            float* funArg = new float[argSize];
-            for (int i = 0;i < allCalNum;i++)
-            {
-                //上方是把N个参数子表达式allCalNum次计算的值全部求出来,这里是把N个子表达式的第j次结果拿来传给底层
-                for (int j = 0;j < argSize;j++)
-                    funArg[j] = pArgs[j][i];
-                output[i] = this->Calcb(funArg);
-            }
-            delete funArg;
-        }
-        else//没有参数,直接计算N次即可
-        {
-            for (int i = 0;i < allCalNum;i++)
-                output[i] = this->Calcb(nullptr);
-        }
+        this->Calcb(pArgs, output);
 
         for (auto pfArr : pArgs)
             delete pfArr;

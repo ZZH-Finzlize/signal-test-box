@@ -1,10 +1,12 @@
 #pragma once
+#include <QVector>
+extern uint32_t allCalNum;
 
-float __sin(const float* f);
-float __cos(const float* f);
-float __rand(const float* f);
-float __hrand(const float* f);
-float __inner_max(const float* f);
-float __inner_min(const float* f);
-float hrand(const float* f);
+void __sin(QVector<float*>& pArgs, float* output);
+void __cos(QVector<float*>& pArgs, float* output);
+void __rand(QVector<float*>& pArgs, float* output);
+void __hrand(QVector<float*>& pArgs, float* output);
+void __inner_max(QVector<float*>& pArgs, float* output);
+void __inner_min(QVector<float*>& pArgs, float* output);
+void hrand(QVector<float*>& pArgs, float* output);
 void resetInnerFun(void);
