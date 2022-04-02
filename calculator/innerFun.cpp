@@ -78,11 +78,12 @@ void __fft(QVector<float*>& pArgs, float* output)
     float* arg0 = pArgs[0];
     const int halfCalNum = allCalNum / 2;
 
-    fftwf_complex* r = (fftwf_complex*) fftwf_malloc(halfCalNum * sizeof(fftwf_complex));
+    fftwf_complex* r = (fftwf_complex*) fftwf_malloc(allCalNum * sizeof(fftwf_complex));
     fftwf_plan p = fftwf_plan_dft_r2c_1d(allCalNum, arg0, r, FFTW_ESTIMATE);
 
     fftwf_execute(p);
-
+    fftwf_destroy_plan(p);
+    
     for (int i = 0, j = 0;i < halfCalNum;i++, j += 2)
     {
         output[j] = r[i][0];
@@ -90,7 +91,6 @@ void __fft(QVector<float*>& pArgs, float* output)
     }
 
     fftwf_free(r);
-    fftwf_destroy_plan(p);
 }
 
 void __length(QVector<float*>& pArgs, float* output)

@@ -8,6 +8,14 @@ set(execName ${PROJECT_NAME})
 set(CMAKE_CXX_STANDARD 11)
 
 
+if(${CMAKE_BUILD_TYPE} STREQUAL Debug)
+    message("build in debug")
+else()
+    message("build in resease")
+    set(special_flag WIN32)
+endif()
+
+
 set(flex_file
     ${PROJECT_BINARY_DIR}/scanner.cpp
 )
@@ -53,7 +61,7 @@ include_directories(${Qt5Core_INCLUDE_DIRS})
 
 add_definitions(-DCMAKE_PROJ_NAME="${PROJECT_NAME}")
 
-add_executable(${execName}
+add_executable(${execName} ${special_flag}
     main.cpp
     ui/mainWindow.cpp
     calculator/ast.cpp
