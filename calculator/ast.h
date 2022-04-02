@@ -272,5 +272,62 @@ public:
     }
 };
 
+class ASTCondition_t:public ASTExpress_t
+{
+private:
+
+protected:
+    ASTExpress_t* cond, *left, *right;
+public:
+    ASTCondition_t(ASTExpress_t* c, ASTExpress_t* l, ASTExpress_t* r) :cond(c), left(l), right(r) {}
+    ~ASTCondition_t() 
+    {
+        if (nullptr != this->cond)
+            delete this->cond;
+
+        if(nullptr != this->left)
+            delete this->left;
+
+        if (nullptr != this->right)
+            delete this->right;
+    }
+
+    virtual void calculate(float* output) const override
+    {
+        if (nullptr != this->cond and nullptr != this->left and nullptr != this->right)
+        {
+            float* condRes = new float[allCalNum];
+            float* leftRes = new float[allCalNum];
+            float* rightRes = new float[allCalNum];
+            
+            this->cond->calculate(condRes);
+            this->left->calculate(leftRes);
+            this->right->calculate(rightRes);
+
+            for (int i = 0;i < allCalNum;i++)
+                output[i] = 0 != condRes[i] ? leftRes[i] : rightRes[i];
+
+            delete[] condRes;
+            delete[] leftRes;
+            delete[] rightRes;
+        }
+        else
+        {
+            for (int i = 0;i < allCalNum;i++)
+                output[i] = 0;
+        }
+    }
+
+    virtual bool compile(void) override
+    {
+        if(nullptr != this->cond and nullptr != this->left and nullptr != this->right)
+        {
+            return this->cond->compile() && this->left->compile() && this->right->compile();
+        }
+
+        return false;
+    }
+};
+
 extern ASTExpress_t* root;
 extern QString textToParse;

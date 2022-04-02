@@ -170,7 +170,7 @@ void MainWindow::calculateCurSig(void)
     resetParser();
     yyparse();
 
-    if (yyerrorCount == 0 || nullptr != root)
+    if (yyerrorCount == 0 and nullptr != root)
     {
         root->resetRecCounter();
         if (root->compile())

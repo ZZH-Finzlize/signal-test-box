@@ -28,7 +28,7 @@ bool ASTSignal_t::compile(void)
             {
                 resetParser();
                 yyparse();
-                if (yyerrorCount == 0 || nullptr != root)
+                if (yyerrorCount == 0 and nullptr != root)
                 {
                     this->subRoot = root;
                     if (root->compile())
