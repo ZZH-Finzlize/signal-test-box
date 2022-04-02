@@ -24,6 +24,11 @@
 ![信号3](./readme_rc/sig4.png)
 ![信号4](./readme_rc/sig5.png)
 
+<font size=5>傅立叶变换,对变换结果调用length是因为fft函数输出为复数,而length函数为向量求模函数,因此可求出幅度谱
+
+![输入信号](./readme_rc/mix_sig.png)
+![幅度谱](./readme_rc/fft.png)
+
 ## 2. 工作原理
 
 1. 一个信号可用一个表达式f进行描述,在任意的t时刻,信号的强度为f(t)
