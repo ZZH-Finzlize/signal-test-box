@@ -172,9 +172,6 @@ void MainWindow::calculateCurSig(void)
 
     if (yyerrorCount == 0 || nullptr != root)
     {
-        // QVector<float> dataArray(this->calNum);
-        // QList<float> dataArray1;
-        // dataArray1.fromVector(dataArray);
         root->resetRecCounter();
         if (root->compile())
         {

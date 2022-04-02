@@ -64,6 +64,6 @@ add_executable(${execName}
 
 set_target_properties(${execName} PROPERTIES AUTOMOC TRUE AUTOUIC TRUE AUTORCC TRUE)
 
-# target_link_directories(${execName} PUBLIC ./lib)
+target_link_directories(${execName} PUBLIC lib)
 
-target_link_libraries(${execName} ${Qt5Widgets_LIBRARIES} ${Qt5Charts_LIBRARIES} fftw3f fftw3)
+target_link_libraries(${execName} ${Qt5Widgets_LIBRARIES} ${Qt5Charts_LIBRARIES} libfftw3f-3.dll)

@@ -1,8 +1,11 @@
 #include <math.h>
-#include "innerFun.h"
 #include <stdlib.h>
 #include <time.h>
+#include <stdio.h>
+#include <QLibrary>
+
 #include "fftw3.h"
+#include "innerFun.h"
 static float currentMax = 0;
 static float currentMin = 0;
 
@@ -38,7 +41,7 @@ void __inner_max(QVector<float*>& pArgs, float* output)
     float* arg0 = pArgs[0];
     for (int i = 0;i < allCalNum;i++)
         output[i] = __max(arg0[i], currentMax);
-}
+}//8 16 32 64 128 256 512 1024 2048 4096
 
 void __inner_min(QVector<float*>& pArgs, float* output)
 {
@@ -63,16 +66,46 @@ void __abs(QVector<float*>& pArgs, float* output)
         output[i] = fabs(arg0[i]);
 }
 
+void __freq(QVector<float*>& pArgs, float* output)
+{
+    float* arg0 = pArgs[0];
+    for (int i = 0;i < allCalNum;i++)
+        output[i] = 2 * 3.1415926535 * arg0[i];
+}
+
 void __fft(QVector<float*>& pArgs, float* output)
 {
     float* arg0 = pArgs[0];
-    fftwf_complex* r = (fftwf_complex*) fftwf_malloc(allCalNum * sizeof(fftwf_complex));
+    const int halfCalNum = allCalNum / 2;
+
+    fftwf_complex* r = (fftwf_complex*) fftwf_malloc(halfCalNum * sizeof(fftwf_complex));
     fftwf_plan p = fftwf_plan_dft_r2c_1d(allCalNum, arg0, r, FFTW_ESTIMATE);
 
-    
     fftwf_execute(p);
 
-    
+    for (int i = 0, j = 0;i < halfCalNum;i++, j += 2)
+    {
+        output[j] = r[i][0];
+        output[j + 1] = r[i][1];
+    }
+
     fftwf_free(r);
     fftwf_destroy_plan(p);
+}
+
+void __length(QVector<float*>& pArgs, float* output)
+{
+    float* arg0 = pArgs[0];
+    const int halfCalNum = allCalNum / 2;
+
+    for (int i = 0, j = 0;i < halfCalNum;i++, j += 2)
+    {
+        output[i] = sqrtf(powf(arg0[j], 2) + powf(arg0[j + 1], 2));
+        output[i + halfCalNum] = 0;
+    }
+}
+
+void __angle(QVector<float*>& pArgs, float* output)
+{
+
 }

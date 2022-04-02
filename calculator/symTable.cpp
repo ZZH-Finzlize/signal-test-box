@@ -16,6 +16,8 @@ static void __attribute__((constructor)) __init()
     FunSymTable.insert("min", __inner_min);
     FunSymTable.insert("max", __inner_max);
     FunSymTable.insert("abs", __abs);
+    FunSymTable.insert("freq", __freq);
     FunSymTable.insert("fft", __fft);
+    FunSymTable.insert("length", __length);
     // FunSymTable.insert("cos", __cos);
 }
