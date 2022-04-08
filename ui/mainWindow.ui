@@ -61,7 +61,7 @@
       <item>
        <widget class="QComboBox" name="pFsScale">
         <property name="currentText">
-         <string>KHz</string>
+         <string>Hz</string>
         </property>
         <item>
          <property name="text">
@@ -222,7 +222,7 @@
          </item>
         </layout>
        </widget>
-       <widget class="QtCharts::QChartView" name="pSignalChart">
+       <widget class="ChartView" name="pSignalChart">
         <property name="sizePolicy">
          <sizepolicy hsizetype="MinimumExpanding" vsizetype="MinimumExpanding">
           <horstretch>0</horstretch>
@@ -259,9 +259,9 @@
  </widget>
  <customwidgets>
   <customwidget>
-   <class>QtCharts::QChartView</class>
+   <class>ChartView</class>
    <extends>QGraphicsView</extends>
-   <header location="global">QtCharts/QChartView</header>
+   <header>ChartView.h</header>
   </customwidget>
  </customwidgets>
  <resources/>

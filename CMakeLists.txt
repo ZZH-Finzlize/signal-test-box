@@ -64,6 +64,7 @@ add_definitions(-DCMAKE_PROJ_NAME="${PROJECT_NAME}")
 add_executable(${execName} ${special_flag}
     main.cpp
     ui/mainWindow.cpp
+    ui/ChartView.cpp
     calculator/ast.cpp
     calculator/symTable.cpp
     calculator/innerFun.cpp

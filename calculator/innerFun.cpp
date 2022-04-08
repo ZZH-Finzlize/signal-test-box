@@ -6,6 +6,8 @@
 
 #include "fftw3.h"
 #include "innerFun.h"
+#include "ast.h"
+
 static float currentMax = 0;
 static float currentMin = 0;
 
@@ -70,7 +72,7 @@ void __freq(QVector<float*>& pArgs, float* output)
 {
     float* arg0 = pArgs[0];
     for (int i = 0;i < allCalNum;i++)
-        output[i] = 2 * 3.1415926535 * arg0[i];
+        output[i] = 2 * 3.1415926535 * arg0[i] * ASTExpress_t::pListOfT[i];
 }
 
 void __fft(QVector<float*>& pArgs, float* output)

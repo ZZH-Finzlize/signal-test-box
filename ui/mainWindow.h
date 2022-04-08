@@ -10,7 +10,7 @@
 #include <QtCharts/QChart>
 #include <QtCharts/QChartView>
 #include <QtCharts/QValueAxis>
-#include <QtCharts/QSplineSeries>
+#include <QtCharts/QLineSeries>
 #include <QListWidgetItem>
 
 class MainWindow : public QMainWindow
@@ -21,9 +21,11 @@ private:
     const QString sigName = "sig%1";
     QString curItemText;
     static const QRegExp sigNameRule;
+    QtCharts::QLineSeries* pSeries;
+    QtCharts::QValueAxis* pAxisX, * pAxisY;
 protected:
     Ui::MainWindow ui;
-    
+
     int calNum;
 
     inline void saveExpToItem(QListWidgetItem* item, const QString& text)
@@ -50,6 +52,5 @@ public:
     void itemChanged(QListWidgetItem* item);
 
 public slots:
-    void on_pSignalList_currentItemChanged(QListWidgetItem* current, QListWidgetItem *previous);
+    void on_pSignalList_currentItemChanged(QListWidgetItem* current, QListWidgetItem* previous);
 };
-    

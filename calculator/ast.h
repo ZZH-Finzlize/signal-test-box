@@ -13,8 +13,10 @@ private:
 
 protected:
     static int recursionCount;
-    static float* pListOfT;
+    
 public:
+    static float* pListOfT;
+
     ASTExpress_t() {}
     virtual ~ASTExpress_t() {}
     static inline void resetRecCounter(int initVal = 0) { recursionCount = initVal; }

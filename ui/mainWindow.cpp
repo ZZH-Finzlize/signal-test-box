@@ -5,6 +5,7 @@
 #include "symTable.h"
 #include "innerFun.h"
 #include "compile_common.h"
+#include "ChartView.h"
 
 using namespace QtCharts;
 //                                    HZ  KHZ    MHZ
@@ -15,14 +16,21 @@ const QRegExp MainWindow::sigNameRule("[a-zA-Z_][a-zA-Z0-9_]*");
 MainWindow::MainWindow(QWidget* parent) : QMainWindow(parent), sigSuffix(0)
 {
     ui.setupUi(this);
-    // ui.pSignalChart->setMinimumSize(150, 150);
+    this->pSeries = new QLineSeries;
+    this->pAxisX = new QValueAxis();
+    this->pAxisY = new QValueAxis();
 
     auto pChart = new QChart();
     pChart->setAnimationOptions(QChart::AllAnimations);
     pChart->setBackgroundVisible();
     pChart->autoFillBackground();
-    pChart->addAxis(new QValueAxis(), Qt::AlignBottom);
-    pChart->addAxis(new QValueAxis(), Qt::AlignLeft);
+    pChart->addAxis(this->pAxisX, Qt::AlignBottom);
+    pChart->addAxis(this->pAxisY, Qt::AlignLeft);
+    pChart->legend()->setVisible(false);
+    pChart->addSeries(this->pSeries);
+    this->pSeries->attachAxis(this->pAxisX);
+    this->pSeries->attachAxis(this->pAxisY);
+
     ui.pSignalChart->setChart(pChart);
     ui.pSignalList->addActions({ ui.actNewSig, ui.actDelSig });
     this->calNum = ui.pCalNum->text().toInt();
@@ -120,7 +128,7 @@ void MainWindow::on_pSignalList_currentItemChanged(QListWidgetItem* current, QLi
         if (not expr.isEmpty())
             this->calculateCurSig();
         else
-            ui.pSignalChart->chart()->removeAllSeries();
+            this->pSeries->clear();
         this->curItemText = current->text();
     }
     else
@@ -128,7 +136,7 @@ void MainWindow::on_pSignalList_currentItemChanged(QListWidgetItem* current, QLi
         qDebug() << "invaild selection clear curItemText";
         this->curItemText.clear();
         ui.pSignalExpress->clear();
-        ui.pSignalChart->chart()->removeAllSeries();
+        this->pSeries->clear();
     }
 }
 
@@ -178,35 +186,27 @@ void MainWindow::calculateCurSig(void)
             float maxValue, minValue;
             allCalNum = this->calNum;
             resetInnerFun();
-            auto pChart = ui.pSignalChart->chart();
-            pChart->removeAllSeries();
-            
+
+            this->pSeries->clear();
+
             root->preCalculateT();
-            float *res = new float[this->calNum];
+            float* res = new float[this->calNum];
             root->calculate(res);
             root->cleanPreCalT();
 
-            auto series = new QLineSeries();
             for (int calPoint = 0;calPoint < this->calNum;calPoint++)
             {
                 float curValue = res[calPoint];
                 maxValue = __max(curValue, maxValue);
                 minValue = __min(curValue, minValue);
-                series->append(calPoint, curValue);
+                this->pSeries->append(calPoint, curValue);
             }
-            
             delete[] res;
-            
-            series->setName(ui.pSignalList->currentItem()->text());
 
-            auto axisX = pChart->axes(Qt::Horizontal)[0];
-            auto axisY = pChart->axes(Qt::Vertical)[0];
-            axisX->setRange(0, this->calNum);
-            axisY->setRange(minValue * 1.15 - 1, maxValue * 1.15 + 1);
+            this->pSeries->setName(ui.pSignalList->currentItem()->text());
 
-            pChart->addSeries(series);
-            series->attachAxis(axisX);
-            series->attachAxis(axisY);
+            this->pAxisX->setRange(0, this->calNum);
+            this->pAxisY->setRange(minValue * 1.15 - 1, maxValue * 1.15 + 1);
         }
     }
 
