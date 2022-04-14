@@ -17,6 +17,7 @@ void ChartView::mouseMoveEvent(QMouseEvent* event)
     auto axes = pChart->axes();
     QValueAxis* axisX = dynamic_cast<QValueAxis*>(axes[0]);
     QValueAxis* axisY = dynamic_cast<QValueAxis*>(axes[1]);
+    auto pSerise = dynamic_cast<QLineSeries*>(pChart->series()[0]);
 
     float xMin = axisX->min();
     float xMax = axisX->max();
@@ -24,19 +25,18 @@ void ChartView::mouseMoveEvent(QMouseEvent* event)
     float yMax = axisY->max();
 
     float x = pos.x();
-    float y = pos.y();
 
     if (x < xMin)
         x = xMin;
     else if (x > xMax)
         x = xMax;
 
-    if (y < yMin)
-        y = yMin;
-    else if (y > yMax)
-        y = yMax;
+    if (pSerise->count() > (int) x)
+    {
+        float y = pSerise->at((int) x).y();
 
-    this->pPosTip->setText(QString("X: %1\nY: %2").arg(x).arg(y));
+        this->pPosTip->setText(QString("X: %1\nY: %2").arg(x).arg(y));
+    }
 
     QGraphicsView::mouseMoveEvent(event);
 }
