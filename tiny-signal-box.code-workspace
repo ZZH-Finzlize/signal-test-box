@@ -21,7 +21,7 @@
             // "debug": true,
         },
         "files.encoding": "utf8",
-        "search.useIgnoreFiles": false
+        "search.useIgnoreFiles": false,
     },
     "tasks": {
         "version": "2.0.0",
@@ -29,11 +29,8 @@
             {
                 "type": "shell",
                 "label": "build",
-                "command": "make",
-                "args": [
-                    "-j",
-                    "all"
-                ],
+                "command": "ninja",
+                "args": [],
                 "options": {
                     "cwd": "${workspaceFolder}/build"
                 },
@@ -54,9 +51,8 @@
             {
                 "type": "shell",
                 "label": "clean",
-                "command": "make",
+                "command": "ninja",
                 "args": [
-                    "-j",
                     "clean"
                 ],
                 "options": {
