@@ -8,6 +8,8 @@ void ChartView::setUp()
     this->pPosTip = new QLabel(this);
     this->pPosTip->setMinimumSize(QSize(60, 30));
     this->pPosTip->show();
+    this->pressPos.setX(0);
+    this->pressPos.setY(0);
 }
 
 void ChartView::mouseMoveEvent(QMouseEvent* event)
@@ -24,6 +26,8 @@ void ChartView::mouseMoveEvent(QMouseEvent* event)
     float yMin = axisY->min();
     float yMax = axisY->max();
 
+    qDebug() << "button: " << event->button();
+
     float x = pos.x();
 
     if (x < xMin)
@@ -39,4 +43,27 @@ void ChartView::mouseMoveEvent(QMouseEvent* event)
     }
 
     QGraphicsView::mouseMoveEvent(event);
+}
+
+void ChartView::mousePressEvent(QMouseEvent* event)
+{
+    this->pressPos = event->pos();
+}
+
+void ChartView::mouseReleaseEvent(QMouseEvent* event)
+{
+    auto releasePos = event->pos();
+    int deltaX = releasePos.x() - this->pressPos.x();
+    int deltaY = releasePos.y() - this->pressPos.y();
+
+    auto pChart = this->chart();
+    if (nullptr != pChart)
+    {
+        pChart->scroll(-deltaX, deltaY);
+    }
+}
+
+void ChartView::wheelEvent(QWheelEvent* event)
+{
+
 }

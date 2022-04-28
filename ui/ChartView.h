@@ -10,7 +10,9 @@ class ChartView :public QtCharts::QChartView
 private:
     void setUp();
 protected:
-    QLabel *pPosTip;
+    QLabel* pPosTip;
+    QPoint pressPos;
+    
 public:
     explicit ChartView(QWidget* parent = nullptr) : QChartView(parent) { this->setUp(); }
     explicit ChartView(QtCharts::QChart* chart, QWidget* parent = nullptr): QChartView(chart, parent) { this->setUp(); }
@@ -18,4 +20,8 @@ public:
     
 
     virtual void mouseMoveEvent(QMouseEvent* event) override;
+    virtual void mousePressEvent(QMouseEvent *event) override;
+    virtual void mouseReleaseEvent(QMouseEvent* event) override;
+    virtual void wheelEvent(QWheelEvent* event) override;
+    
 };

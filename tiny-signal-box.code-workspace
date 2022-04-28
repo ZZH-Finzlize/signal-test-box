@@ -25,7 +25,6 @@
         "markdownlint.config": {
             "MD033": false
         },
-        "cmake.preferredGenerators": ["Ninja"],
     },
     "tasks": {
         "version": "2.0.0",
