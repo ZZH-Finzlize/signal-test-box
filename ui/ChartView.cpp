@@ -73,5 +73,17 @@ void ChartView::mouseReleaseEvent(QMouseEvent* event)
 
 void ChartView::wheelEvent(QWheelEvent* event)
 {
+    auto pChart = this->chart();
 
+    if (nullptr == pChart)
+        return;//直接返回没有调用父类的事件函数,不知道会不会有影响
+
+    if (event->delta() > 0)
+    {
+        pChart->zoomIn();
+    }
+    else
+    {
+        pChart->zoomOut();
+    }
 }
