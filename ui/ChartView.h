@@ -11,8 +11,8 @@ private:
     void setUp();
 protected:
     QLabel* pPosTip;
-    QPoint pressPos;
-    
+    QPoint prePos;
+    bool isPress;
 public:
     explicit ChartView(QWidget* parent = nullptr) : QChartView(parent) { this->setUp(); }
     explicit ChartView(QtCharts::QChart* chart, QWidget* parent = nullptr): QChartView(chart, parent) { this->setUp(); }

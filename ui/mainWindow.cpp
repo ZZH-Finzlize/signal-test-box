@@ -21,7 +21,7 @@ MainWindow::MainWindow(QWidget* parent) : QMainWindow(parent), sigSuffix(0)
     this->pAxisY = new QValueAxis();
 
     auto pChart = new QChart();
-    pChart->setAnimationOptions(QChart::AllAnimations);
+    pChart->setAnimationOptions(QChart::NoAnimation);
     pChart->setBackgroundVisible();
     pChart->autoFillBackground();
     pChart->addAxis(this->pAxisX, Qt::AlignBottom);
