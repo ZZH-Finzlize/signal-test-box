@@ -177,6 +177,7 @@ void MainWindow::calculateCurSig(void)
     fs = ui.pFs->text().toFloat() * this->fsScale[ui.pFsScale->currentIndex()];
     resetParser();
     yyparse();
+    fftIsCalled = false;
 
     if (yyerrorCount == 0 and nullptr != root)
     {
@@ -199,13 +200,21 @@ void MainWindow::calculateCurSig(void)
                 float curValue = res[calPoint];
                 maxValue = __max(curValue, maxValue);
                 minValue = __min(curValue, minValue);
-                this->pSeries->append(calPoint, curValue);
+                this->pSeries->append(fftIsCalled ? calPoint * fs / calNum : calPoint, curValue);
             }
             delete[] res;
 
             this->pSeries->setName(ui.pSignalList->currentItem()->text());
 
-            this->pAxisX->setRange(0, this->calNum);
+            if(true == fftIsCalled)//频谱模式,横轴需要直接解算为对应的频率值
+            {
+                this->pAxisX->setRange(0, fs);
+            }
+            else//非频谱模式, 范围直接就是值的范围
+            {
+                this->pAxisX->setRange(0, this->calNum);
+            }
+
             this->pAxisY->setRange(minValue * 1.15 - 1, maxValue * 1.15 + 1);
         }
     }

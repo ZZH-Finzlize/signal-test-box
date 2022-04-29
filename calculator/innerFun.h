@@ -1,6 +1,7 @@
 #pragma once
 #include <QVector>
 extern uint32_t allCalNum;
+extern bool fftIsCalled;
 
 void __sin(QVector<float*>& pArgs, float* output);
 void __cos(QVector<float*>& pArgs, float* output);

@@ -11,6 +11,8 @@
 static float currentMax = 0;
 static float currentMin = 0;
 
+bool fftIsCalled = false;//如果fft函数被调用过,则置位此标志位,通知ui进入频谱模式
+
 void resetInnerFun(void)
 {
     srand(time(NULL));
@@ -79,6 +81,7 @@ void __fft(QVector<float*>& pArgs, float* output)
 {
     float* arg0 = pArgs[0];
     const int halfCalNum = allCalNum / 2;
+    fftIsCalled = true;
 
     fftwf_complex* r = (fftwf_complex*) fftwf_malloc(allCalNum * sizeof(fftwf_complex));
     fftwf_plan p = fftwf_plan_dft_r2c_1d(allCalNum, arg0, r, FFTW_ESTIMATE);
