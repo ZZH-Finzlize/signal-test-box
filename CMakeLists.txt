@@ -7,14 +7,12 @@ set(execName ${PROJECT_NAME})
 
 set(CMAKE_CXX_STANDARD 11)
 
-
 if(${CMAKE_BUILD_TYPE} STREQUAL Debug)
     message("build in debug")
 else()
     message("build in resease")
     set(special_flag WIN32)
 endif()
-
 
 set(flex_file
     ${PROJECT_BINARY_DIR}/scanner.cpp
@@ -42,7 +40,6 @@ add_custom_target(fc
     COMMENT "flex build"
 )
 
-
 add_custom_target(bc
     DEPENDS ${PROJECT_SOURCE_DIR}/calculator/scanner.l fc
     BYPRODUCTS ${bison_file}
@@ -51,7 +48,6 @@ add_custom_target(bc
     WORKING_DIRECTORY ${PROJECT_SOURCE_DIR}/calculator/
     COMMENT "bison build"
 )
-
 
 include_directories(.)
 include_directories(./ui)
@@ -76,3 +72,24 @@ set_target_properties(${execName} PROPERTIES AUTOMOC TRUE AUTOUIC TRUE AUTORCC T
 target_link_directories(${execName} PUBLIC lib)
 
 target_link_libraries(${execName} ${Qt5Widgets_LIBRARIES} ${Qt5Charts_LIBRARIES} libfftw3f-3.dll)
+
+file(GLOB libSrcFiles
+    LIST_DIRECTORIES false
+    libSrc/*.cpp
+)
+
+set(LIBRARY_OUTPUT_PATH ${CMAKE_CURRENT_BINARY_DIR}/lib)
+
+foreach(srcFile ${libSrcFiles})
+    cmake_path(RELATIVE_PATH srcFile)
+    cmake_path(GET srcFile FILENAME fn)
+    string(REPLACE "." ";" fn ${fn})
+    list(GET fn 0 fn)
+    # message("fn:" ${fn} "\nsrc:" ${srcFile} "\n")
+    add_library(${fn} SHARED
+        ${srcFile}
+    )
+endforeach()
+
+
+

@@ -25,31 +25,28 @@
         "markdownlint.config": {
             "MD033": false
         },
+        "json.schemas": [
+            {
+                "fileMatch": [
+                    "libSrc/*.json"
+                ],
+                "url": "./libSrc/lib.schema.json"
+            }
+        ]
     },
     "tasks": {
         "version": "2.0.0",
         "tasks": [
             {
-                "type": "shell",
+                "type": "cmake",
                 "label": "build",
-                "command": "ninja",
-                "args": [],
-                "options": {
-                    "cwd": "${workspaceFolder}/build"
-                },
-                "presentation": {
-                    "echo": true,
-                    "reveal": "always",
-                    "focus": false,
-                    "panel": "shared",
-                    "showReuseMessage": true,
-                    "clear": true
-                },
-                "detail": "构建目标",
+                "command": "build",
+                "problemMatcher": "$gcc",
                 "group": {
                     "kind": "build",
                     "isDefault": true
-                }
+                },
+                "detail": "CMake 构建"
             },
             {
                 "type": "shell",
@@ -88,6 +85,27 @@
                     "kind": "test",
                     "isDefault": true
                 }
+            },
+            {
+                "type": "shell",
+                "label": "install_lib",
+                "command": "./copy_lib.sh",
+                "options": {
+                    "cwd": "${workspaceFolder}/lib"
+                },
+                "problemMatcher": [],
+                "detail": "将共享库拷贝至对应位置"
+            },
+            {
+                "type": "cmake",
+                "label": "build",
+                "command": "build",
+                "problemMatcher": "$gcc",
+                "group": {
+                    "kind": "build",
+                    "isDefault": true
+                },
+                "detail": "CMake 构建"
             }
         ]
     },
