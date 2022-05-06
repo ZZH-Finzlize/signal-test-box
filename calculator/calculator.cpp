@@ -8,10 +8,5 @@
 
 void Calculator_t::reset()
 {
-    //初始化计算组件,需要完成以下几件事
-    //初始化语法树节点,并
-    if (this->root)
-        delete this->root;
-
     
 }

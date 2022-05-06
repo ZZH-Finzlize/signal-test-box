@@ -76,10 +76,7 @@ target_link_directories(${execName} PUBLIC lib)
 
 target_link_libraries(${execName} ${Qt5Widgets_LIBRARIES} ${Qt5Charts_LIBRARIES} libfftw3f-3.dll)
 
-file(GLOB libSrcFiles
-    LIST_DIRECTORIES false
-    libSrc/*.cpp
-)
+file(GLOB libSrcFiles libSrc/*.cpp)
 
 set(LIBRARY_OUTPUT_PATH ${CMAKE_CURRENT_BINARY_DIR}/lib)
 

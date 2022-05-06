@@ -9,10 +9,8 @@
 class Calculator_t
 {
 private:
-    ASTExpress_t* root;
     unsigned int totolPoint;
     float fs;
-    QString textToParse;
 protected:
 
 public:
@@ -21,16 +19,9 @@ public:
         this->reset();
     }
 
-    ~Calculator_t()
-    {
-        if (nullptr != this->root)
-            delete this->root;
-    }
+    ~Calculator_t() {}
 
     void reset(void);
-
-    ASTExpress_t* getASTRoot(void) const;
-    void setASTRoot(const ASTExpress_t* const newValue = nullptr);
 
     unsigned int getTotolPoint(void) const;
     void setTotolPoint(const unsigned int newValue);
