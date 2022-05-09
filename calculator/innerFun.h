@@ -3,16 +3,16 @@
 extern uint32_t allCalNum;
 extern bool fftIsCalled;
 
-void __sin(QVector<float*>& pArgs, float* output);
-void __cos(QVector<float*>& pArgs, float* output);
-void __rand(QVector<float*>& pArgs, float* output);
-void __hrand(QVector<float*>& pArgs, float* output);
-void __inner_max(QVector<float*>& pArgs, float* output);
-void __inner_min(QVector<float*>& pArgs, float* output);
-void hrand(QVector<float*>& pArgs, float* output);
-void __abs(QVector<float*>& pArgs, float* output);
-void __freq(QVector<float*>& pArgs, float* output);
-void __fft(QVector<float*>& pArgs, float* output);
-void __length(QVector<float*>& pArgs, float* output);
-void __angle(QVector<float*>& pArgs, float* output);
+void __sin(float** pArgs, float* output);
+void __cos(float** pArgs, float* output);
+void __rand(float** pArgs, float* output);
+void __hrand(float** pArgs, float* output);
+void __inner_max(float** pArgs, float* output);
+void __inner_min(float** pArgs, float* output);
+void hrand(float** pArgs, float* output);
+void __abs(float** pArgs, float* output);
+void __freq(float** pArgs, float* output);
+void __fft(float** pArgs, float* output);
+void __length(float** pArgs, float* output);
+void __angle(float** pArgs, float* output);
 void resetInnerFun(void);

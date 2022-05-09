@@ -1,8 +1,6 @@
 #pragma once
-#include <QtCore>
 #include <QString>
 #include <QList>
-#include <QListWidgetItem>
 #include <cmath>
 extern uint32_t allCalNum;
 extern float fs;
@@ -13,7 +11,7 @@ private:
 
 protected:
     static int recursionCount;
-    
+
 public:
     static float* pListOfT;
 
@@ -70,7 +68,7 @@ class ASTFunctionCall_t : public ASTExpress_t
 private:
 
 public:
-    typedef void (*calFunc_t)(QVector<float*>& pArgs, float* output);
+    typedef void (*calFunc_t)(float** pArgs, float* output);
 
 protected:
     calFunc_t Calcb;
@@ -93,14 +91,16 @@ public:
         if (nullptr == output)
             return;
 
-        QVector<float*> pArgs;
+        float** pArgs = nullptr;
+        int argLen = 0;
 
         if (nullptr != this->args)
         {
-            auto argLen = args->length();
+            argLen = args->length();
+            pArgs = new float* [argLen];
+
             if (0 != argLen)
             {
-                pArgs.resize(argLen);
                 for (int i = 0;i < argLen;i++)
                 {
                     pArgs[i] = new float[allCalNum];
@@ -111,8 +111,11 @@ public:
 
         this->Calcb(pArgs, output);
 
-        for (auto pfArr : pArgs)
-            delete pfArr;
+        for (int i = 0;i < argLen;i++)
+            delete pArgs[i];
+
+        if (nullptr != pArgs)
+            delete[] pArgs;
     }
 
     virtual bool compile(void) override
@@ -274,20 +277,20 @@ public:
     }
 };
 
-class ASTCondition_t:public ASTExpress_t
+class ASTCondition_t :public ASTExpress_t
 {
 private:
 
 protected:
-    ASTExpress_t* cond, *left, *right;
+    ASTExpress_t* cond, * left, * right;
 public:
     ASTCondition_t(ASTExpress_t* c, ASTExpress_t* l, ASTExpress_t* r) :cond(c), left(l), right(r) {}
-    ~ASTCondition_t() 
+    ~ASTCondition_t()
     {
         if (nullptr != this->cond)
             delete this->cond;
 
-        if(nullptr != this->left)
+        if (nullptr != this->left)
             delete this->left;
 
         if (nullptr != this->right)
@@ -301,7 +304,7 @@ public:
             float* condRes = new float[allCalNum];
             float* leftRes = new float[allCalNum];
             float* rightRes = new float[allCalNum];
-            
+
             this->cond->calculate(condRes);
             this->left->calculate(leftRes);
             this->right->calculate(rightRes);
@@ -322,7 +325,7 @@ public:
 
     virtual bool compile(void) override
     {
-        if(nullptr != this->cond and nullptr != this->left and nullptr != this->right)
+        if (nullptr != this->cond and nullptr != this->left and nullptr != this->right)
         {
             return this->cond->compile() && this->left->compile() && this->right->compile();
         }

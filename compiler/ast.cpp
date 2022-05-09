@@ -1,6 +1,7 @@
 #include "ast.h"
 #include "symTable.h"
 #include <QMessageBox>
+#include <QListWidgetItem>
 #include "compile_common.h"
 #include <string>
 

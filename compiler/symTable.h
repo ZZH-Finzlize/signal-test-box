@@ -1,6 +1,7 @@
 #pragma once
 #include <QMap>
 #include "ast.h"
+#include <QListWidgetItem>
 
 template <typename Symbol_t>
 class SymTable_t
