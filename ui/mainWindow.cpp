@@ -49,7 +49,7 @@ MainWindow::MainWindow(QWidget* parent) : QMainWindow(parent), sigSuffix(0)
         ui.pCalNum->blockSignals(true);
 
         int newValue = ui.pCalNum->text().toInt();
-        if (newValue > 4096 || newValue <= 0)
+        if (newValue > 1024 || newValue <= 0)
         {
             QMessageBox::critical(this, tr("计算点数错误"), tr("%1 是非法值").arg(newValue));
             newValue = this->calNum;

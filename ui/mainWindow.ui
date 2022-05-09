@@ -61,7 +61,7 @@
       <item>
        <widget class="QComboBox" name="pFsScale">
         <property name="currentText">
-         <string>Hz</string>
+         <string>KHz</string>
         </property>
         <item>
          <property name="text">
@@ -124,7 +124,7 @@
          <string>出于性能考虑,采样点数目前最多4096,更大的值极有可能造成卡死</string>
         </property>
         <property name="text">
-         <string>1024</string>
+         <string notr="true">128</string>
         </property>
         <property name="maxLength">
          <number>4</number>
