@@ -53,6 +53,7 @@ include_directories(.)
 include_directories(./ui)
 include_directories(./calculator)
 include_directories(./compiler)
+include_directories(./util)
 include_directories(${CMAKE_CURRENT_BINARY_DIR})
 include_directories(${Qt5Core_INCLUDE_DIRS})
 
@@ -62,6 +63,7 @@ add_executable(${execName} ${special_flag}
     main.cpp
     ui/mainWindow.cpp
     ui/ChartView.cpp
+    ui/SignalItem.cpp
     compiler/symTable.cpp
     compiler/compiler.cpp
     compiler/ast.cpp

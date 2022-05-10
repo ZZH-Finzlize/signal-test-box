@@ -5,27 +5,41 @@
 @info: 计算组件
 */
 #include "ast.h"
+#include "log.h"
 
 class Calculator_t
 {
 private:
+    static Calculator_t inst;
+
     unsigned int totolPoint;
     float fs;
-protected:
+    float* pListOfT;
 
-public:
     Calculator_t()
     {
-        this->reset();
+        this->totolPoint = 0;
+        this->fs = 0;
+        this->pListOfT = nullptr;
+        COMP_INFO("Init");
     }
 
-    ~Calculator_t() {}
+    ~Calculator_t()
+    {
+        COMP_INFO("Destroy");
+    }
+protected:
+    void allocArgs(void);
+    void cleanArgs(void);
+    
+public:
+    static Calculator_t& getInst(void) { return inst; }
 
-    void reset(void);
+    unsigned int getTotolPoint(void) const { return this->totolPoint; }
+    void setTotolPoint(const unsigned int newValue) { this->totolPoint = newValue; }
 
-    unsigned int getTotolPoint(void) const;
-    void setTotolPoint(const unsigned int newValue);
+    float getFS(void) const { return this->fs; }
+    void setFS(const float newValue) { this->fs = newValue; }
 
-    float getFS(void) const;
-    void setFS(const float newValue);
+    bool calculate(ASTExpress_t* exp, float* pRes);
 };

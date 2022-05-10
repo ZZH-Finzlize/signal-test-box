@@ -1,6 +1,6 @@
 #include "ChartView.h"
 #include <qDebug>
-
+extern bool fftIsCalled;
 using namespace QtCharts;
 
 void ChartView::setUp()
@@ -29,12 +29,12 @@ void ChartView::mouseMoveEvent(QMouseEvent* event)
         
         pChart->scroll(deltaX, deltaY);
     }
-
-    auto pos = pChart->mapToValue(curPos);
+    
     auto axes = pChart->axes();
-    QValueAxis* axisX = dynamic_cast<QValueAxis*>(axes[0]);
-    QValueAxis* axisY = dynamic_cast<QValueAxis*>(axes[1]);
-    auto pSerise = dynamic_cast<QLineSeries*>(pChart->series()[0]);
+    QValueAxis* axisX = static_cast<QValueAxis*>(axes[0]);
+    QValueAxis* axisY = static_cast<QValueAxis*>(axes[1]);
+    auto pSerise = static_cast<QLineSeries*>(pChart->series()[0]);
+    auto pos = pChart->mapToValue(curPos, pSerise);
 
     float xMax = axisX->max();
     float x = pos.x();
@@ -44,7 +44,7 @@ void ChartView::mouseMoveEvent(QMouseEvent* event)
     else if (x > xMax)
         x = xMax;
 
-    if (pSerise->count() > (int) x)
+    if ((pSerise->count() > (int) x))// || (true == fftIsCalled && x < fs))
     {
         float y = pSerise->at((int) x).y();
 

@@ -1,7 +1,7 @@
 #include "mainWindow.h"
 #include <cmath>
 #include <QMessageBox>
-#include <QDebug>
+#include "log.h"
 #include "symTable.h"
 #include "innerFun.h"
 #include "compile_common.h"
@@ -15,6 +15,7 @@ const QRegExp MainWindow::sigNameRule("[a-zA-Z_][a-zA-Z0-9_]*");
 
 MainWindow::MainWindow(QWidget* parent) : QMainWindow(parent), sigSuffix(0)
 {
+    UI_INFO("Start init");
     ui.setupUi(this);
     this->pSeries = new QLineSeries;
     this->pAxisX = new QValueAxis();
@@ -63,10 +64,12 @@ MainWindow::MainWindow(QWidget* parent) : QMainWindow(parent), sigSuffix(0)
         // ui.pCalNum->setText(QString("%1").arg(newValue));
         ui.pCalNum->blockSignals(false);
     });
+    UI_INFO("Start done");
 }
 
 MainWindow::~MainWindow()
 {
+    UI_INFO("Destroy");
 }
 
 void MainWindow::addSignal(void)
@@ -79,7 +82,7 @@ void MainWindow::addSignal(void)
     if (SigSymTable.insert(itemName, newItem))
     {
         this->curItemText = itemName;
-        qDebug() << "add new sig " << itemName << "to symTable and update curItemText";
+        UI_INFO("Add signal: %s", itemName.toStdString().c_str());
     }
     else
     {
@@ -133,7 +136,7 @@ void MainWindow::on_pSignalList_currentItemChanged(QListWidgetItem* current, QLi
     }
     else
     {
-        qDebug() << "invaild selection clear curItemText";
+        UI_INFO("Invaild selection clear curItemText");
         this->curItemText.clear();
         ui.pSignalExpress->clear();
         this->pSeries->clear();
@@ -147,7 +150,7 @@ void MainWindow::itemChanged(QListWidgetItem* item)
         const QString& newName = item->text();
         if (this->sigNameRule.exactMatch(newName))//新的信号名称符合要求
         {
-            qDebug() << "item changed from:" << this->curItemText << " to: " << newName;
+            UI_INFO("Item changed from: %s to: %s", this->curItemText.toStdString().c_str(), newName.toStdString().c_str());
             SigSymTable.remove(this->curItemText);
             this->curItemText = newName;
             if (SigSymTable.insert(this->curItemText, item))
