@@ -7,6 +7,7 @@
 
 class ChartView :public QtCharts::QChartView
 {
+    Q_OBJECT
 private:
     void setUp();
 protected:

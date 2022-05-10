@@ -11,6 +11,7 @@ bool SignalItem::compile(void)
 {
     if (true == this->isDirty())
     {
+        COMP_INFO("Compile dirty signal %s", this->text().toStdString().c_str());
         this->compileRes = Compiler_t::getInst().compile(this->sourceCode);
 
         if (nullptr == this->compileRes)
@@ -18,6 +19,7 @@ bool SignalItem::compile(void)
 
         this->dirty = false;
     }
-
+    
+    COMP_INFO("Signal %s is clean", this->text().toStdString().c_str());
     return true;
 }

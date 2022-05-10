@@ -20,12 +20,12 @@ protected:
 
 public:
     SignalItem(const QString& name) :QListWidgetItem(name), compileRes(nullptr), dirty(false) { UI_INFO("New item: %s", name.toStdString().c_str()); }
-    ~SignalItem()
+    virtual ~SignalItem()
     {
         if (nullptr != this->compileRes)
             delete this->compileRes;
 
-        UI_INFO("Delete item: ", this->text().toStdString().c_str());
+        UI_INFO("Delete");
     }
 
     bool setSourceCode(const QString& code)

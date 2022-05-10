@@ -183,23 +183,28 @@ void MainWindow::itemChanged(QListWidgetItem* item)
 void MainWindow::calculateCurSig(void)
 {
     auto pItem = static_cast<SignalItem*>(ui.pSignalList->currentItem());
-    pItem->setSourceCode(ui.pSignalExpress->toPlainText());
+    pItem->setSourceCode(ui.pSignalExpress->toPlainText());//将编辑框代码保存至item
 
+    //获取编译器和计算器的实例
     auto& calculator = Calculator_t::getInst();
     auto& compiler = Compiler_t::getInst();
 
-    calculator.setFS(ui.pFs->text().toFloat() * this->fsScale[ui.pFsScale->currentIndex()]);
+    //设置计算器使用的采样率
+    float fs = ui.pFs->text().toFloat() * this->fsScale[ui.pFsScale->currentIndex()];
+    calculator.setFS(fs);
 
+    //从计算器获取总计算点数
     int calNum = calculator.getTotolPoint();
-    float fs = calculator.getFS();
     
-    float maxValue, minValue;
+    float maxValue = 0, minValue = 0;
 
-    if (true == compiler.compile(pItem))
+    if (true == compiler.compile(pItem))//计算之前先编译当前item,item内部会根据item的源码是否修改选择性编译
     {
         float* res = new float[calNum];
         calculator.calculate(pItem, res);
-        
+
+        pSeries->clear();
+
         for (int calPoint = 0;calPoint < calNum;calPoint++)
         {
             float curValue = res[calPoint];

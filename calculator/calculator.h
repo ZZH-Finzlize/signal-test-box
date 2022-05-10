@@ -29,6 +29,7 @@ private:
     ~Calculator_t()
     {
         COMP_INFO("Destroy");
+        delete this->inst;
     }
 protected:
     void allocArgs(void);
