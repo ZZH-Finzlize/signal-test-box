@@ -12,6 +12,7 @@ Compiler_t Compiler_t::inst(32);
 bool Compiler_t::compile(SignalItem* pSignal)
 {
     this->recursionCount = 0;
+    this->queuePush(pSignal);
 
     while (not this->queueIsEmpty())//队列会在编译时动态添加新的元素
     {

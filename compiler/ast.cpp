@@ -5,47 +5,143 @@
 #include "compile_common.h"
 #include <string>
 
-ASTExpress_t* root;
-uint32_t allCalNum;
-float fs = 0.01;
-QString textToParse;
-
-int ASTExpress_t::recursionCount = 0;
-float* ASTExpress_t::pListOfT = nullptr;
-
-bool ASTSignal_t::compile(void)
+void ASTFunctionCall_t::calculate(float* output) const
 {
-    bool res = false;
-    if (this->getRecCounter() < 15)
-    {
-        this->recursionCount++;
-        ASTExpress_t* savedRoot = root;
-        QListWidgetItem* item;
+    if (nullptr == output)
+        return;
 
-        if (SigSymTable.search(this->sigName, item))
+    FunCallArg_t funArgs = {
+        Calculator_t::getInst().getTotolPoint(),
+        Calculator_t::getInst().getPT(),
+        nullptr
+    };
+
+    int argLen = 0;
+
+    if (nullptr != this->args)
+    {
+        argLen = args->length();
+        funArgs.args = new float* [argLen];
+
+        if (0 != argLen)
         {
-            textToParse = item->data(Qt::UserRole + 2).toString();
-            if (not textToParse.isEmpty())
+            for (int i = 0;i < argLen;i++)
             {
-                resetParser();
-                yyparse();
-                if (yyerrorCount == 0 and nullptr != root)
-                {
-                    this->subRoot = root;
-                    if (root->compile())
-                    {
-                        res = true;
-                    }
-                }
+                funArgs.args[i] = new float[funArgs.allCalNum];
+                this->args->at(i)->calculate(funArgs.args[i]);
             }
         }
+    }
 
-        root = savedRoot;
+    this->Calcb(&funArgs, output);
+
+    for (int i = 0;i < argLen;i++)
+        delete funArgs.args[i];
+
+    if (nullptr != funArgs.args)
+        delete[] funArgs.args;
+}
+
+void ASTOperator_t::calculate(float* output) const
+{
+    if (nullptr == output)
+        return;
+
+    int allNum = Calculator_t::getInst().getTotolPoint();
+
+    float* lVal = new float[allNum];
+    this->left->calculate(lVal);
+
+    float* rVal = new float[allNum];
+    this->right->calculate(rVal);
+
+    switch (this->op)
+    {
+        case '+':
+        {
+            for (int i = 0;i < allNum;i++)
+                output[i] = lVal[i] + rVal[i];
+        }
+        break;
+
+        case '-':
+        {
+            for (int i = 0;i < allNum;i++)
+                output[i] = lVal[i] - rVal[i];
+        }
+        break;
+
+        case '*':
+        {
+            for (int i = 0;i < allNum;i++)
+                output[i] = lVal[i] * rVal[i];
+        }
+        break;
+
+        case '/':
+        {
+            for (int i = 0;i < allNum;i++)
+                output[i] = lVal[i] / rVal[i];
+        }
+        break;
+
+        case '%':
+        {
+            for (int i = 0;i < allNum;i++)
+                output[i] = std::fmod(lVal[i], rVal[i]);
+        }
+        break;
+
+        case '^':
+        {
+            for (int i = 0;i < allNum;i++)
+                output[i] = powf(lVal[i], rVal[i]);
+        }
+        break;
+
+        case '>':
+        {
+            for (int i = 0;i < allNum;i++)
+                output[i] = lVal[i] > rVal[i];
+        }
+        break;
+
+        case '<':
+        {
+            for (int i = 0;i < allNum;i++)
+                output[i] = lVal[i] < rVal[i];
+        }
+        break;
+    }
+
+    delete[] lVal;
+    delete[] rVal;
+}
+
+void ASTCondition_t::calculate(float* output) const
+{
+    int allNum = Calculator_t::getInst().getTotolPoint();
+
+    if (nullptr != this->cond and nullptr != this->left and nullptr != this->right)
+    {
+        float* condRes = new float[allNum];
+        float* leftRes = new float[allNum];
+        float* rightRes = new float[allNum];
+
+        this->cond->calculate(condRes);
+        this->left->calculate(leftRes);
+        this->right->calculate(rightRes);
+
+        for (int i = 0;i < allNum;i++)
+            output[i] = 0 != condRes[i] ? leftRes[i] : rightRes[i];
+
+        delete[] condRes;
+        delete[] leftRes;
+        delete[] rightRes;
     }
     else
     {
-        QMessageBox::critical(nullptr, QString::fromUtf8("递归终止"), QString::fromUtf8("变量嵌套层数超过最大限制,最大值为15,请检查信号表达式是否存在循环引用或使用了太多嵌套"));
+        for (int i = 0;i < allNum;i++)
+            output[i] = 0;
     }
-
-    return res;
 }

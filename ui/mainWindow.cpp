@@ -4,8 +4,10 @@
 #include "log.h"
 #include "symTable.h"
 #include "innerFun.h"
-#include "compile_common.h"
 #include "ChartView.h"
+#include "SignalItem.h"
+#include "compiler.h"
+#include "calculator.h"
 
 using namespace QtCharts;
 //                                    HZ  KHZ    MHZ
@@ -34,7 +36,8 @@ MainWindow::MainWindow(QWidget* parent) : QMainWindow(parent), sigSuffix(0)
 
     ui.pSignalChart->setChart(pChart);
     ui.pSignalList->addActions({ ui.actNewSig, ui.actDelSig });
-    this->calNum = ui.pCalNum->text().toInt();
+
+    Calculator_t::getInst().setTotolPoint(ui.pCalNum->text().toInt());
 
     ui.pCalNum->setValidator(new QRegExpValidator(QRegExp("\\d+")));
 
@@ -50,14 +53,16 @@ MainWindow::MainWindow(QWidget* parent) : QMainWindow(parent), sigSuffix(0)
         ui.pCalNum->blockSignals(true);
 
         int newValue = ui.pCalNum->text().toInt();
+        auto& calculator = Calculator_t::getInst();
+
         if (newValue > 1024 || newValue <= 0)
         {
             QMessageBox::critical(this, tr("计算点数错误"), tr("%1 是非法值").arg(newValue));
-            newValue = this->calNum;
+            newValue = calculator.getTotolPoint();
         }
         else
         {
-            this->calNum = newValue;
+            calculator.setTotolPoint(newValue);
         }
 
         //这里究竟是保持当前编辑值还是恢复上一次的正确值,两种策略好像都合理,暂定保持编辑值
@@ -75,7 +80,7 @@ MainWindow::~MainWindow()
 void MainWindow::addSignal(void)
 {
     QString itemName = this->sigName.arg(this->sigSuffix++);
-    auto newItem = new QListWidgetItem(itemName);
+    auto newItem = new SignalItem(itemName);
     newItem->setFlags(newItem->flags() | Qt::ItemIsEditable);
     ui.pSignalList->addItem(newItem);
 
@@ -120,13 +125,15 @@ void MainWindow::on_pSignalList_currentItemChanged(QListWidgetItem* current, QLi
     //保存上一个
     if (nullptr != previous)
     {
-        this->saveExpToItem(previous, ui.pSignalExpress->toPlainText());
+        // this->saveExpToItem(previous, ui.pSignalExpress->toPlainText());
+        auto pItem = static_cast<SignalItem*>(previous);
+        pItem->setSourceCode(ui.pSignalExpress->toPlainText());
     }
 
     //载入下一个
     if (nullptr != current)
     {
-        const QString& expr = current->data(this->signalExpressRole).toString();
+        const QString& expr = static_cast<SignalItem*>(current)->getSourceCode();
         ui.pSignalExpress->setPlainText(expr);
         if (not expr.isEmpty())
             this->calculateCurSig();
@@ -153,7 +160,7 @@ void MainWindow::itemChanged(QListWidgetItem* item)
             UI_INFO("Item changed from: %s to: %s", this->curItemText.toStdString().c_str(), newName.toStdString().c_str());
             SigSymTable.remove(this->curItemText);
             this->curItemText = newName;
-            if (SigSymTable.insert(this->curItemText, item))
+            if (SigSymTable.insert(this->curItemText, static_cast<SignalItem*>(item)))
             {
                 return;
             }
@@ -175,56 +182,49 @@ void MainWindow::itemChanged(QListWidgetItem* item)
 
 void MainWindow::calculateCurSig(void)
 {
-    textToParse = ui.pSignalExpress->toPlainText();
-    this->saveExpToItem(ui.pSignalList->currentItem(), textToParse);
-    fs = ui.pFs->text().toFloat() * this->fsScale[ui.pFsScale->currentIndex()];
-    resetParser();
-    yyparse();
-    fftIsCalled = false;
+    auto pItem = static_cast<SignalItem*>(ui.pSignalList->currentItem());
+    pItem->setSourceCode(ui.pSignalExpress->toPlainText());
 
-    if (yyerrorCount == 0 and nullptr != root)
+    auto& calculator = Calculator_t::getInst();
+    auto& compiler = Compiler_t::getInst();
+
+    calculator.setFS(ui.pFs->text().toFloat() * this->fsScale[ui.pFsScale->currentIndex()]);
+
+    int calNum = calculator.getTotolPoint();
+    float fs = calculator.getFS();
+    
+    float maxValue, minValue;
+
+    if (true == compiler.compile(pItem))
     {
-        root->resetRecCounter();
-        if (root->compile())
+        float* res = new float[calNum];
+        calculator.calculate(pItem, res);
+        
+        for (int calPoint = 0;calPoint < calNum;calPoint++)
         {
-            float maxValue, minValue;
-            allCalNum = this->calNum;
-            resetInnerFun();
-
-            this->pSeries->clear();
-
-            root->preCalculateT();
-            float* res = new float[this->calNum];
-            root->calculate(res);
-            root->cleanPreCalT();
-
-            for (int calPoint = 0;calPoint < this->calNum;calPoint++)
-            {
-                float curValue = res[calPoint];
-                maxValue = __max(curValue, maxValue);
-                minValue = __min(curValue, minValue);
-                this->pSeries->append(fftIsCalled ? calPoint * fs / calNum : calPoint, curValue);
-            }
-            delete[] res;
-
-            this->pSeries->setName(ui.pSignalList->currentItem()->text());
-
-            if(true == fftIsCalled)//频谱模式,横轴需要直接解算为对应的频率值
-            {
-                this->pAxisX->setRange(0, fs);
-            }
-            else//非频谱模式, 范围直接就是值的范围
-            {
-                this->pAxisX->setRange(0, this->calNum);
-            }
-
-            this->pAxisY->setRange(minValue * 1.15 - 1, maxValue * 1.15 + 1);
+            float curValue = res[calPoint];
+            maxValue = __max(curValue, maxValue);
+            minValue = __min(curValue, minValue);
+            this->pSeries->append(fftIsCalled ? calPoint * fs / calNum : calPoint, curValue);
         }
+        delete[] res;
+
+        this->pSeries->setName(ui.pSignalList->currentItem()->text());
+
+        if (true == fftIsCalled)//频谱模式,横轴需要直接解算为对应的频率值
+        {
+            this->pAxisX->setRange(0, fs);
+        }
+        else//非频谱模式, 范围直接就是值的范围
+        {
+            this->pAxisX->setRange(0, calNum);
+        }
+
+        this->pAxisY->setRange(minValue * 1.15 - 1, maxValue * 1.15 + 1);
+    }
+    else
+    {
+        UI_ERROR("Signal compile fail");
     }
 
-    if (nullptr != root)
-    {
-        delete root;
-        root = nullptr;
-    }
 }

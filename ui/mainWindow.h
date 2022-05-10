@@ -11,7 +11,6 @@
 #include <QtCharts/QChartView>
 #include <QtCharts/QValueAxis>
 #include <QtCharts/QLineSeries>
-#include <QListWidgetItem>
 
 class MainWindow : public QMainWindow
 {
@@ -23,17 +22,9 @@ private:
     static const QRegExp sigNameRule;
     QtCharts::QLineSeries* pSeries;
     QtCharts::QValueAxis* pAxisX, * pAxisY;
+
 protected:
     Ui::MainWindow ui;
-
-    int calNum;
-
-    inline void saveExpToItem(QListWidgetItem* item, const QString& text)
-    {
-        ui.pSignalList->blockSignals(true);
-        item->setData(this->signalExpressRole, text);
-        ui.pSignalList->blockSignals(false);
-    }
 
 public:
     static const int signalExpressRole = Qt::UserRole + 2;

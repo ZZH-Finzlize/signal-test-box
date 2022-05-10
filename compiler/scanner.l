@@ -13,6 +13,8 @@
 #include "grammar.tab.hpp"
 #include <cstring>
 #include "math.h"
+#include "compiler.h"
+#include "log.h"
 using namespace std;
 size_t yycolumn = 1;
 void recordLocInfo(void)
@@ -26,6 +28,7 @@ void recordLocInfo(void)
 
 int user_input(char* buf, int max_size)
 {
+    auto& textToParse = Compiler_t::getInst().getParseText();
     int sizeToRead = __min(max_size, textToParse.length());
     if(0 != sizeToRead)
     {

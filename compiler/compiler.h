@@ -76,6 +76,8 @@ public:
     ASTExpress_t* getASTRoot(void) const { return this->root; }
     void setASTRoot(ASTExpress_t* const newValue = nullptr) { this->root = newValue; }
 
+    QString& getParseText(void) { return this->textToParse; }
+
     bool compile(SignalItem* pSignal);
 
     void queuePush(SignalItem* pSignal) { this->compile_queue.push_back(pSignal); }

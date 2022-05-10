@@ -1,7 +1,7 @@
 #pragma once
 #include <QMap>
 #include "ast.h"
-#include <QListWidgetItem>
+#include "SignalItem.h"
 
 template <typename Symbol_t>
 class SymTable_t
@@ -77,7 +77,7 @@ public:
 // };
 
 using FunSymTable_t = SymTable_t<ASTFunctionCall_t::calFunc_t>;
-using SigSymTable_t = SymTable_t<QListWidgetItem*>;
+using SigSymTable_t = SymTable_t<SignalItem*>;
 
 extern SigSymTable_t SigSymTable;
 extern FunSymTable_t FunSymTable;

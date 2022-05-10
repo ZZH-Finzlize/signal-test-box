@@ -5,8 +5,9 @@
 @info: 计算组件
 */
 #include "calculator.h"
+#include "ast.h"
 
-Calculator_t Calculator_t::inst;
+Calculator_t* Calculator_t::inst = nullptr;
 
 void Calculator_t::allocArgs()
 {

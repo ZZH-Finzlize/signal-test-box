@@ -4,13 +4,15 @@
 @time: 2022-05-05 16:47:15
 @info: 计算组件
 */
-#include "ast.h"
+#pragma once
 #include "log.h"
+
+class ASTExpress_t;
 
 class Calculator_t
 {
 private:
-    static Calculator_t inst;
+    static Calculator_t *inst;
 
     unsigned int totolPoint;
     float fs;
@@ -31,9 +33,19 @@ private:
 protected:
     void allocArgs(void);
     void cleanArgs(void);
-    
+    float* getPT(void) { return this->pListOfT; }
+
 public:
-    static Calculator_t& getInst(void) { return inst; }
+
+    friend class ASTFunctionCall_t;
+
+    static Calculator_t& getInst(void)
+    {
+        if(nullptr == inst)
+            inst = new Calculator_t;
+        
+        return *inst;
+    }
 
     unsigned int getTotolPoint(void) const { return this->totolPoint; }
     void setTotolPoint(const unsigned int newValue) { this->totolPoint = newValue; }
@@ -42,4 +54,6 @@ public:
     void setFS(const float newValue) { this->fs = newValue; }
 
     bool calculate(ASTExpress_t* exp, float* pRes);
+
+    inline float getT(int index) { return this->pListOfT[index]; }
 };

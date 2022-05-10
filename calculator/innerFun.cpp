@@ -7,6 +7,7 @@
 #include "fftw3.h"
 #include "innerFun.h"
 #include "ast.h"
+#include "calculator.h"
 
 static float currentMax = 0;
 static float currentMin = 0;
@@ -20,66 +21,76 @@ void resetInnerFun(void)
     currentMin = 0;
 }
 
-void __sin(float** pArgs, float* output)
+void __sin(pFunCallArg_t pArgs, float* output)
 {
-    float* arg0 = pArgs[0];
+    int allCalNum = pArgs->allCalNum;
+    float* arg0 = pArgs->args[0];
     for (int i = 0;i < allCalNum;i++)
         output[i] = sin(arg0[i]);
 }
 
-void __cos(float** pArgs, float* output)
+void __cos(pFunCallArg_t pArgs, float* output)
 {
-    float* arg0 = pArgs[0];
+    int allCalNum = pArgs->allCalNum;
+    float* arg0 = pArgs->args[0];
     for (int i = 0;i < allCalNum;i++)
         output[i] = sin(arg0[i]);
 }
 
-void __rand(float** pArgs, float* output)
+void __rand(pFunCallArg_t pArgs, float* output)
 {
+    int allCalNum = pArgs->allCalNum;
     for (int i = 0;i < allCalNum;i++)
         output[i] = rand();
 }
 
-void __inner_max(float** pArgs, float* output)
+void __inner_max(pFunCallArg_t pArgs, float* output)
 {
-    float* arg0 = pArgs[0];
+    int allCalNum = pArgs->allCalNum;
+    float* arg0 = pArgs->args[0];
     for (int i = 0;i < allCalNum;i++)
         output[i] = __max(arg0[i], currentMax);
 }//8 16 32 64 128 256 512 1024 2048 4096
 
-void __inner_min(float** pArgs, float* output)
+void __inner_min(pFunCallArg_t pArgs, float* output)
 {
-    float* arg0 = pArgs[0];
+    int allCalNum = pArgs->allCalNum;
+    float* arg0 = pArgs->args[0];
     for (int i = 0;i < allCalNum;i++)
         output[i] = __min(arg0[i], currentMax);
 }
 
 //使用CPU的rdrand指令产生硬件随机数
-void hrand(float** pArgs, float* output)
+void hrand(pFunCallArg_t pArgs, float* output)
 {
+    int allCalNum = pArgs->allCalNum;
     for (int i = 0;i < allCalNum;i++)
     {
         asm volatile("rdrand %0":"=r"(*output));
     }
 }
 
-void __abs(float** pArgs, float* output)
+void __abs(pFunCallArg_t pArgs, float* output)
 {
-    float* arg0 = pArgs[0];
+    int allCalNum = pArgs->allCalNum;
+    float* arg0 = pArgs->args[0];
     for (int i = 0;i < allCalNum;i++)
         output[i] = fabs(arg0[i]);
 }
 
-void __freq(float** pArgs, float* output)
+void __freq(pFunCallArg_t pArgs, float* output)
 {
-    float* arg0 = pArgs[0];
+    int allCalNum = pArgs->allCalNum;
+    float* arg0 = pArgs->args[0];
+    
     for (int i = 0;i < allCalNum;i++)
-        output[i] = 2 * 3.1415926535 * arg0[i] * ASTExpress_t::pListOfT[i];
+        output[i] = 2 * 3.1415926535 * arg0[i] * pArgs->t[i];
 }
 
-void __fft(float** pArgs, float* output)
+void __fft(pFunCallArg_t pArgs, float* output)
 {
-    float* arg0 = pArgs[0];
+    int allCalNum = pArgs->allCalNum;
+    float* arg0 = pArgs->args[0];
     const int halfCalNum = allCalNum / 2;
     fftIsCalled = true;
 
@@ -98,9 +109,10 @@ void __fft(float** pArgs, float* output)
     fftwf_free(r);
 }
 
-void __length(float** pArgs, float* output)
+void __length(pFunCallArg_t pArgs, float* output)
 {
-    float* arg0 = pArgs[0];
+    int allCalNum = pArgs->allCalNum;
+    float* arg0 = pArgs->args[0];
     const int halfCalNum = allCalNum / 2;
 
     for (int i = 0, j = 0;i < halfCalNum;i++, j += 2)
@@ -110,7 +122,7 @@ void __length(float** pArgs, float* output)
     }
 }
 
-void __angle(float** pArgs, float* output)
+void __angle(pFunCallArg_t pArgs, float* output)
 {
 
 }
