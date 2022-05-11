@@ -57,7 +57,10 @@ extern int yyerrorCount;
 
 %destructor {
     if(nullptr != $$)
+    {
+        // COMP_INFO("Parser delete a string");
         free($$);
+    }
 } <id>
 
 %token <value> tk_Number "number"
@@ -89,7 +92,7 @@ extern int yyerrorCount;
 
 %%
 
-signal: signal_exp {$$ = $1; Compiler_t::getInst().setASTRoot($1);}
+signal: signal_exp {$$ = $1; Compiler_t::getInst().setASTRoot($1); return 0;}
 
 signal_exp: '(' signal_exp ')' {$$ = $2;}
     |signal_exp '+' signal_exp {$$ = new ASTOperator_t('+', $1, $3);}
