@@ -34,6 +34,27 @@ extern int yyerrorCount;
     char* id;//符号的名称
 }
 
+%destructor {
+    if(nullptr != $$)
+    {
+        // COMP_INFO("Parser delete a node");
+        delete $$;
+    }
+} <node>
+
+%destructor {
+    if(nullptr != $$)
+    {
+        for(auto p: *$$)
+        {
+            // COMP_INFO("Parser delete a node in list");
+            delete p;
+        }
+        // COMP_INFO("Parser delete a list");
+        delete $$;
+    }
+} <list>
+
 %token <value> tk_Number "number"
 %token <id> tk_Symbol "symbol"
 
@@ -63,7 +84,7 @@ extern int yyerrorCount;
 
 %%
 
-signal: signal_exp {Compiler_t::getInst().setASTRoot($1);}
+signal: signal_exp {$$ = $1; Compiler_t::getInst().setASTRoot($1);}
 
 signal_exp: '(' signal_exp ')' {$$ = $2;}
     |signal_exp '+' signal_exp {$$ = new ASTOperator_t('+', $1, $3);}

@@ -12,8 +12,14 @@ private:
 protected:
 
 public:
-    ASTExpress_t() {}
-    virtual ~ASTExpress_t() {}
+    ASTExpress_t()
+    {
+        COMP_LOG("new ast node");
+    }
+    virtual ~ASTExpress_t()
+    {
+        COMP_LOG("del ast node");
+    }
 
     virtual void calculate(float* output) const = 0;
     virtual bool isDirty(void) const { return false; }
@@ -31,7 +37,7 @@ public:
     ~ASTAdaptor_t() {}
 
     virtual void calculate(float* output) const override { this->child->calculate(output); }
-    virtual bool isDirty(void) const override { return this->child->isDirty(); }
+    virtual bool isDirty(void) const override;
 };
 
 class ASTFunctionCall_t : public ASTExpress_t

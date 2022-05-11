@@ -14,18 +14,16 @@ bool Compiler_t::compile(SignalItem* pSignal)
 
     while (not this->queueIsEmpty())//队列会在编译时动态添加新的元素
     {
-        if (true == this->recPush())//嵌套计数增加
-        {
-            SignalItem* pCurrentSig = this->queuePopFirst();//取出首项
+        SignalItem* pCurrentSig = this->queuePopFirst();//取出首项
 
+        try
+        {
             if (false == pCurrentSig->compile())//编译首项
                 return false;
-
-            this->recPop();//嵌套计数减少
         }
-        else
+        catch (const QString& str)
         {
-            QMessageBox::critical(nullptr, QString::fromUtf8("递归终止"), QString::fromUtf8("变量嵌套层数超过最大限制,最大值为15,请检查信号表达式是否存在循环引用或使用了太多嵌套"));
+            QMessageBox::critical(nullptr, QString::fromUtf8("编译错误"), str);
             return false;
         }
     }

@@ -39,6 +39,12 @@ private:
 
 protected:
 
+    ASTExpress_t* compile(const QString& code);
+
+public:
+
+    friend class SignalItem;
+
     bool recPush(void)
     {
         if (this->recursionCount < this->maxRecLim)
@@ -62,12 +68,6 @@ protected:
 
         return false;
     }
-
-    ASTExpress_t* compile(const QString& code);
-
-public:
-
-    friend class SignalItem;
 
     static Compiler_t& getInst() { static Compiler_t inst(32); return inst; }
 

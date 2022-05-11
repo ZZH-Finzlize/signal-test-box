@@ -2,17 +2,36 @@
 #include "symTable.h"
 #include <QMessageBox>
 #include <QListWidgetItem>
-#include "compile_common.h"
+#include "compiler.h"
 #include <string>
+
+bool ASTAdaptor_t::isDirty(void) const
+{
+    auto& compiler = Compiler_t::getInst();
+    bool res = false;
+
+    if (true == compiler.recPush())
+    {
+        res = this->child->isDirty();
+        compiler.recPop();
+    }
+    else
+    {
+        throw QString::fromUtf8("变量嵌套层数超过最大限制,最大值为15,请检查信号表达式是否存在循环引用或使用了太多嵌套");
+    }
+    return res;
+}
 
 void ASTFunctionCall_t::calculate(float* output) const
 {
     if (nullptr == output)
         return;
 
+    auto& calculator = Calculator_t::getInst();
+
     FunCallArg_t funArgs = {
-        Calculator_t::getInst().getTotolPoint(),
-        Calculator_t::getInst().getPT(),
+        calculator.getTotolPoint(),
+        calculator.getPT(),
         nullptr
     };
 

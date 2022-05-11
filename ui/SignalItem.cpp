@@ -12,6 +12,10 @@ bool SignalItem::compile(void)
     if (true == this->isDirty())
     {
         COMP_INFO("Compile dirty signal %s", this->text().toStdString().c_str());
+
+        if (nullptr != this->compileRes)
+            delete this->compileRes;
+
         this->compileRes = Compiler_t::getInst().compile(this->sourceCode);
 
         if (nullptr == this->compileRes)
