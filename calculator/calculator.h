@@ -12,8 +12,6 @@ class ASTExpress_t;
 class Calculator_t
 {
 private:
-    static Calculator_t *inst;
-
     unsigned int totolPoint;
     float fs;
     float* pListOfT;
@@ -29,8 +27,8 @@ private:
     ~Calculator_t()
     {
         COMP_INFO("Destroy");
-        delete this->inst;
     }
+    
 protected:
     void allocArgs(void);
     void cleanArgs(void);
@@ -42,10 +40,9 @@ public:
 
     static Calculator_t& getInst(void)
     {
-        if(nullptr == inst)
-            inst = new Calculator_t;
+        static Calculator_t inst;
         
-        return *inst;
+        return inst;
     }
 
     unsigned int getTotolPoint(void) const { return this->totolPoint; }

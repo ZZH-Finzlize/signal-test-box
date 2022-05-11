@@ -18,6 +18,20 @@ public:
     virtual void calculate(float* output) const = 0;
 };
 
+class ASTAdaptor_t :public ASTExpress_t
+{
+private:
+
+protected:
+    ASTExpress_t* child;
+public:
+    ASTAdaptor_t(ASTExpress_t* pChild) :child(pChild) {}
+    //adaptor在被析构时不释放子节点,因为它的作用就是自动断开释放链
+    ~ASTAdaptor_t() {}
+
+    virtual void calculate(float* output) const override { this->child->calculate(output); }
+};
+
 class ASTFunctionCall_t : public ASTExpress_t
 {
 private:
@@ -131,6 +145,3 @@ public:
 
     virtual void calculate(float* output) const override;
 };
-
-extern ASTExpress_t* root;
-extern QString textToParse;

@@ -7,8 +7,6 @@
 #include "calculator.h"
 #include "ast.h"
 
-Calculator_t* Calculator_t::inst = nullptr;
-
 void Calculator_t::allocArgs()
 {
     if (nullptr != this->pListOfT)

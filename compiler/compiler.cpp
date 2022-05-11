@@ -7,8 +7,6 @@
 #include <QMessageBox>
 #include "compiler.h"
 
-Compiler_t Compiler_t::inst(32);
-
 bool Compiler_t::compile(SignalItem* pSignal)
 {
     this->recursionCount = 0;

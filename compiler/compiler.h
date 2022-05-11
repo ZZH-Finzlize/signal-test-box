@@ -13,8 +13,6 @@
 class Compiler_t
 {
 private:
-    static Compiler_t inst;
-
     ASTExpress_t* root;
     QString textToParse;
     int recursionCount;
@@ -71,7 +69,7 @@ public:
 
     friend class SignalItem;
 
-    static Compiler_t& getInst() { return inst; }
+    static Compiler_t& getInst() { static Compiler_t inst(32); return inst; }
 
     ASTExpress_t* getASTRoot(void) const { return this->root; }
     void setASTRoot(ASTExpress_t* const newValue = nullptr) { this->root = newValue; }
