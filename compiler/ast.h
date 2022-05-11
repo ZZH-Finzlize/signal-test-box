@@ -16,6 +16,7 @@ public:
     virtual ~ASTExpress_t() {}
 
     virtual void calculate(float* output) const = 0;
+    virtual bool isDirty(void) const { return false; }
 };
 
 class ASTAdaptor_t :public ASTExpress_t
@@ -30,6 +31,7 @@ public:
     ~ASTAdaptor_t() {}
 
     virtual void calculate(float* output) const override { this->child->calculate(output); }
+    virtual bool isDirty(void) const override { return this->child->isDirty(); }
 };
 
 class ASTFunctionCall_t : public ASTExpress_t
@@ -56,6 +58,19 @@ public:
     }
 
     virtual void calculate(float* output) const override;
+    virtual bool isDirty(void) const override
+    {
+        if (nullptr != this->args)
+        {
+            for (auto exp : *this->args)
+            {
+                if (exp->isDirty())
+                    return true;
+            }
+        }
+
+        return false;
+    }
 };
 
 class ASTNumber_t :public ASTExpress_t
@@ -121,6 +136,18 @@ public:
     }
 
     virtual void calculate(float* output) const override;
+    virtual bool isDirty(void) const override
+    {
+        bool res = false;
+
+        if (nullptr != this->left)
+            res |= this->left->isDirty();
+
+        if (nullptr != this->right)
+            res |= this->right->isDirty();
+
+        return res;
+    }
 };
 
 class ASTCondition_t :public ASTExpress_t
@@ -144,4 +171,19 @@ public:
     }
 
     virtual void calculate(float* output) const override;
+    virtual bool isDirty(void) const override
+    {
+        bool res = false;
+
+        if (nullptr != this->left)
+            res |= this->left->isDirty();
+
+        if (nullptr != this->right)
+            res |= this->right->isDirty();
+        
+        if (nullptr != this->cond)
+            res |= this->cond->isDirty();
+
+        return res;
+    }
 };

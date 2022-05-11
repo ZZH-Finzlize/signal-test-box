@@ -41,7 +41,14 @@ public:
 
     ASTExpress_t* getCompileRes() { return this->compileRes; }
 
-    bool isDirty(void) const { return this->dirty; }
+    virtual bool isDirty(void) const override
+    {
+        if (true == this->dirty || nullptr == this->compileRes)
+            return true;
+        else
+            return this->compileRes->isDirty();
+
+    }
 
     bool compile(void);
     
