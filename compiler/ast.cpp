@@ -17,7 +17,7 @@ bool ASTAdaptor_t::isDirty(void) const
     }
     else
     {
-        throw QString::fromUtf8("变量嵌套层数超过最大限制,最大值为15,请检查信号表达式是否存在循环引用或使用了太多嵌套");
+        throw QString::fromUtf8("信号嵌套层数超过最大限制,最大值为15,请检查信号表达式是否存在循环引用或使用了太多嵌套");
     }
     return res;
 }
