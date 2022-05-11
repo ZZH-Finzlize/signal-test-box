@@ -55,6 +55,11 @@ extern int yyerrorCount;
     }
 } <list>
 
+%destructor {
+    if(nullptr != $$)
+        free($$);
+} <id>
+
 %token <value> tk_Number "number"
 %token <id> tk_Symbol "symbol"
 
