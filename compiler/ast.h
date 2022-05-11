@@ -12,14 +12,8 @@ private:
 protected:
 
 public:
-    ASTExpress_t()
-    {
-        COMP_LOG("new ast node");
-    }
-    virtual ~ASTExpress_t()
-    {
-        COMP_LOG("del ast node");
-    }
+    ASTExpress_t() {}
+    virtual ~ASTExpress_t() {}
 
     virtual void calculate(float* output) const = 0;
     virtual bool isDirty(void) const { return false; }
@@ -186,7 +180,7 @@ public:
 
         if (nullptr != this->right)
             res |= this->right->isDirty();
-        
+
         if (nullptr != this->cond)
             res |= this->cond->isDirty();
 

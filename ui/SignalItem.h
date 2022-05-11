@@ -51,7 +51,7 @@ public:
     }
 
     bool compile(void);
-    
+
     virtual void calculate(float* output) const override
     {
         if (nullptr != this->compileRes)

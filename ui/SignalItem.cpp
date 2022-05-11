@@ -23,7 +23,7 @@ bool SignalItem::compile(void)
 
         this->dirty = false;
     }
-    
+
     COMP_INFO("Signal %s is clean", this->text().toStdString().c_str());
     return true;
 }

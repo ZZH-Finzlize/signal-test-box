@@ -195,7 +195,7 @@ void MainWindow::calculateCurSig(void)
 
     //从计算器获取总计算点数
     int calNum = calculator.getTotolPoint();
-    
+
     float maxValue = 0, minValue = 0;
 
     if (true == compiler.compile(pItem))//计算之前先编译当前item,item内部会根据item的源码是否修改选择性编译
