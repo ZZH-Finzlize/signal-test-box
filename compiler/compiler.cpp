@@ -5,6 +5,10 @@
 @info: 编译组件
 */
 #include <QMessageBox>
+#include <QJsonDocument>
+#include <QJsonObject>
+#include <QJsonValue>
+#include <QLibrary>
 #include "compiler.h"
 
 bool Compiler_t::compile(SignalItem* pSignal)
@@ -42,4 +46,29 @@ ASTExpress_t* Compiler_t::compile(const QString& code)
         return nullptr;
 
     return this->root;
+}
+
+void Compiler_t::loadExtLibs(const QString& path)
+{
+    QDir dir(path);
+    for (auto fn : dir.entryList(QStringList("*.json")))
+    {
+        QFile libDef("lib/" + fn);
+        if (true == libDef.open(QIODevice::ReadOnly))
+        {
+            COMP_INFO("load lib: %s", fn.toStdString().c_str());
+
+            QJsonObject json = QJsonDocument::fromJson(libDef.readAll()).object();
+            QLibrary lib(QString("lib/lib%1").arg(fn.split('.')[0]));
+            if (lib.load())
+                COMP_INFO("load lib succ");
+            
+            for (auto funcName : json.keys())
+            {
+                
+            }
+        }
+
+        libDef.close();
+    }
 }

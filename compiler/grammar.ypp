@@ -19,8 +19,8 @@ extern yyrestart(FILE* f);
 #include "ast.h"
 #define inFileLoc(arg) arg.first_line, arg.first_column, arg.last_line, arg.last_column
 extern int yylex (void);
-extern int yyerror(char* s);
-inline int yyerror(const char* s) {return yyerror(const_cast<char*>(s));}//内联重载yyerror,消除const char*类型参数警告
+extern int yyerror(const QString& s);
+inline int yyerror(const char* s) { return yyerror(QString::fromUtf8(s)); }
 extern void resetParser();
 extern size_t yycolumn;
 extern int yylineno;
@@ -123,19 +123,26 @@ signal_call: "symbol" {
     else
     {
         $$ = nullptr;
-        yyerror("undefind signal");
+        yyerror(QString::fromUtf8("使用了未定义的信号: %1").arg($1));
     }
 
     free($1);
 }
 
 func_call: "symbol" '(' arg_list ')' {
-    ASTFunctionCall_t::calFunc_t find_func = nullptr;
+    ASTFunctionCall_t::calFunc_t find_func;
     bool res = FunSymTable.search($1, find_func);
-    free($1);
+    
     if(true == res)
     {
-        $$ = new ASTFunctionCall_t(find_func, $3);
+        if($3->length() == find_func.numOfArg)//传入的实际参数和要求的参数一致
+        {
+            $$ = new ASTFunctionCall_t(find_func.pFunc, $3);
+        }
+        else
+        {
+            yyerror(QString::fromUtf8("传入的参数数量与函数 %1 要求的不一致").arg($1));
+        }
     }
     else
     {
@@ -147,8 +154,10 @@ func_call: "symbol" '(' arg_list ')' {
 
             delete $3;
         }
-        yyerror("undefind function");
+        yyerror(QString::fromUtf8("调用了未定义的函数: %1").arg($1));
     }
+
+    free($1);
 }
 
 condition_exp: signal_exp "if" signal_exp "else" signal_exp {$$ = new ASTCondition_t($3, $1, $5);}
@@ -168,11 +177,11 @@ arg_list: {$$ = nullptr;}
 
 %%
 
-int yyerror(char* s)
+int yyerror(const QString& s)
 {
     /* printf("error occor:%s : %d.%d-%d.%d\r\n", s, inFileLoc(yylloc)); */
-    QMessageBox::critical(nullptr, QString::fromUtf8(s), 
-    QString::fromUtf8("位于 %1.%2-%3.%4").arg(yylloc.first_line).arg(yylloc.first_column).arg(yylloc.last_line).arg(yylloc.last_column)
+    QMessageBox::critical(nullptr, QString::fromUtf8("编译错误"), 
+    QString::fromUtf8("%1\n位于 %2.%3-%4.%5").arg(s).arg(yylloc.first_line).arg(yylloc.first_column).arg(yylloc.last_line).arg(yylloc.last_column)
     );
     yyerrorCount++;
     return 0;

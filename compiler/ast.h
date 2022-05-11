@@ -39,13 +39,21 @@ class ASTFunctionCall_t : public ASTExpress_t
 private:
 
 public:
-    typedef void (*calFunc_t)(pFunCallArg_t pArgs, float* output);
+    typedef void (*pf)(pFunCallArg_t pArgs, float* output);
+    
+    typedef struct
+    {
+        pf pFunc;
+        unsigned int numOfArg;
+    } calFunc_t;
+    
+    // typedef void (*calFunc_t)(pFunCallArg_t pArgs, float* output);
 
 protected:
-    calFunc_t Calcb;
+    pf Calcb;
     QList<ASTExpress_t*>* args;
 public:
-    ASTFunctionCall_t(calFunc_t fun, QList<ASTExpress_t*>* args) :Calcb(fun), args(args) {}
+    ASTFunctionCall_t(pf fun, QList<ASTExpress_t*>* args) :Calcb(fun), args(args) {}
     virtual ~ASTFunctionCall_t()
     {
         if (this->args)

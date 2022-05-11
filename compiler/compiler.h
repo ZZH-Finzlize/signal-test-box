@@ -5,6 +5,7 @@
 @info: 编译组件
 */
 #include <QList>
+#include <QDir>
 #include "compile_common.h"
 #include "ast.h"
 #include "log.h"
@@ -80,5 +81,7 @@ public:
 
     void queuePush(SignalItem* pSignal) { this->compile_queue.push_back(pSignal); }
     bool queueIsEmpty(void) const { return this->compile_queue.isEmpty(); }
+
+    static void loadExtLibs(const QString& path);
 };
 

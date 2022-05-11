@@ -69,6 +69,8 @@ MainWindow::MainWindow(QWidget* parent) : QMainWindow(parent), sigSuffix(0)
         // ui.pCalNum->setText(QString("%1").arg(newValue));
         ui.pCalNum->blockSignals(false);
     });
+
+    Compiler_t::loadExtLibs("./lib");
     UI_INFO("Init done");
 }
 
