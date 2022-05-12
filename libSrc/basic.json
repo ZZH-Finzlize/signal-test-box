@@ -1,10 +1,30 @@
 {
-    "sin": 1,
-    "cos": 1,
-    "rand": 0,
-    "max": 1,
-    "min": 1,
+    "sin": {
+        "sym": "__sin",
+        "argNum": 1
+    },
+    "cos": {
+        "sym": "__cos",
+        "argNum": 1
+    },
+    "rand": {
+        "sym": "__rand",
+        "argNum": 0
+    },
+    "max": {
+        "sym": "__inner_max",
+        "argNum": 1
+    },
+    "min": {
+        "sym": "__inner_min",
+        "argNum": 1
+    },
     "hrand": 0,
-    "abs": 1,
-    "freq": 1
+    "abs": {
+        "sym": "__abs",
+        "argNum": 1
+    },
+    "freq": 1,
+    "length": 1,
+    "angle": 1
 }

@@ -3,7 +3,6 @@
 #include <QMessageBox>
 #include "log.h"
 #include "symTable.h"
-#include "innerFun.h"
 #include "ChartView.h"
 #include "SignalItem.h"
 #include "compiler.h"
@@ -186,6 +185,7 @@ void MainWindow::calculateCurSig(void)
 {
     auto pItem = static_cast<SignalItem*>(ui.pSignalList->currentItem());
     pItem->setSourceCode(ui.pSignalExpress->toPlainText());//将编辑框代码保存至item
+    bool fftIsCalled = false;
 
     //获取编译器和计算器的实例
     auto& calculator = Calculator_t::getInst();

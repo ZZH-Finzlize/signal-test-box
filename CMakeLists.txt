@@ -49,11 +49,14 @@ add_custom_target(bc
     COMMENT "bison build"
 )
 
-include_directories(.)
-include_directories(./ui)
-include_directories(./calculator)
-include_directories(./compiler)
-include_directories(./util)
+include_directories(
+    .
+    ./ui
+    ./calculator
+    ./compiler
+    ./util
+    ./libSrc
+)
 include_directories(${CMAKE_CURRENT_BINARY_DIR})
 include_directories(${Qt5Core_INCLUDE_DIRS})
 
@@ -67,7 +70,6 @@ add_executable(${execName} ${special_flag}
     compiler/symTable.cpp
     compiler/compiler.cpp
     compiler/ast.cpp
-    calculator/innerFun.cpp
     calculator/calculator.cpp
     ${automatic_gen_src}
 )
@@ -91,6 +93,8 @@ foreach(srcFile ${libSrcFiles})
     add_library(${fn} SHARED
         ${srcFile}
     )
+    target_link_directories(${fn} PUBLIC lib)
+    target_link_libraries(${fn} libfftw3f-3.dll)
 endforeach()
 
 

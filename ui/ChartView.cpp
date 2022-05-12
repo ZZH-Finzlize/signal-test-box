@@ -1,6 +1,6 @@
 #include "ChartView.h"
 #include <qDebug>
-extern bool fftIsCalled;
+bool fftIsCalled = false;//如果fft函数被调用过,则置位此标志位,通知ui进入频谱模式
 using namespace QtCharts;
 
 void ChartView::setUp()

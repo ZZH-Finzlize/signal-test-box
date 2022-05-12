@@ -3,7 +3,7 @@
 #include <QList>
 #include <cmath>
 #include "calculator.h"
-#include "innerFun.h"
+#include "libFun.h"
 
 class ASTExpress_t
 {

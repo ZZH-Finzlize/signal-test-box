@@ -10,6 +10,7 @@
 #include <QJsonValue>
 #include <QLibrary>
 #include "compiler.h"
+#include "symTable.h"
 
 bool Compiler_t::compile(SignalItem* pSignal)
 {
@@ -54,18 +55,44 @@ void Compiler_t::loadExtLibs(const QString& path)
     for (auto fn : dir.entryList(QStringList("*.json")))
     {
         QFile libDef("lib/" + fn);
-        if (true == libDef.open(QIODevice::ReadOnly))
+        if (true == libDef.open(QIODevice::ReadOnly | QIODevice::Text))
         {
             COMP_INFO("load lib: %s", fn.toStdString().c_str());
-
             QJsonObject json = QJsonDocument::fromJson(libDef.readAll()).object();
             QLibrary lib(QString("lib/lib%1").arg(fn.split('.')[0]));
             if (lib.load())
-                COMP_INFO("load lib succ");
-            
-            for (auto funcName : json.keys())
             {
-                
+                COMP_INFO("load lib succ");
+                for (auto funcName : json.keys())
+                {
+                    auto value = json[funcName];
+                    if (value.isObject())//另有函数名的模式
+                    {
+                        auto vObject = value.toObject();
+                        auto symName = vObject["sym"].toString();
+                        auto pf = lib.resolve(symName.toStdString().c_str());
+                        if (nullptr != pf)
+                        {
+                            COMP_INFO("load fun %s", funcName.toStdString().c_str());
+                            FunSymTable.insert(funcName, { reinterpret_cast<ASTFunctionCall_t::pf>(pf), (unsigned) vObject["argNum"].toInt() });
+                        }
+                    }
+                    else if (value.isDouble())//数字模式,函数名和符号名一致
+                    {
+                        auto pf = lib.resolve(funcName.toStdString().c_str());
+                        if (nullptr != pf)
+                        {
+                            COMP_INFO("load fun %s", funcName.toStdString().c_str());
+                            FunSymTable.insert(funcName, { reinterpret_cast<ASTFunctionCall_t::pf>(pf), (unsigned) value.toInt() });
+                        }
+                    }
+                }
+
+                auto reset = lib.resolve("reset");//如果库导出了复位函数,则进行复位
+                if (nullptr != reset)
+                {
+                    reset();
+                }
             }
         }
 
