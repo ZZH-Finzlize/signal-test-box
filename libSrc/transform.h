@@ -6,5 +6,4 @@
 */
 #include "libFun.h"
 
-// extern bool fftIsCalled;
 EXPORT void fft(pFunCallArg_t pArgs, float* output);

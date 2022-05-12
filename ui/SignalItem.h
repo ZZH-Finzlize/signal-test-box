@@ -17,9 +17,10 @@ protected:
     QString sourceCode;//信号表达式
     ASTExpress_t* compileRes;//编译后的语法树节点
     bool dirty;
+    bool isFFTMode;
 
 public:
-    SignalItem(const QString& name) :QListWidgetItem(name), compileRes(nullptr), dirty(false) { UI_INFO("New item: %s", name.toStdString().c_str()); }
+    SignalItem(const QString& name) :QListWidgetItem(name), compileRes(nullptr), dirty(false), isFFTMode(false) { UI_INFO("New item: %s", name.toStdString().c_str()); }
     virtual ~SignalItem()
     {
         if (nullptr != this->compileRes)
@@ -40,6 +41,9 @@ public:
     QString getSourceCode(void) const { return this->sourceCode; }
 
     ASTExpress_t* getCompileRes() { return this->compileRes; }
+
+    inline void setFFTMode(bool mode) { this->isFFTMode = mode; }
+    inline bool getFFTMode(void) const { return this->isFFTMode; }
 
     virtual bool isDirty(void) const override
     {

@@ -12,7 +12,6 @@ void fft(pFunCallArg_t pArgs, float* output)
     int allCalNum = pArgs->allCalNum;
     float* arg0 = pArgs->args[0];
     const int halfCalNum = allCalNum / 2;
-    // fftIsCalled = true;
 
     fftwf_complex* r = (fftwf_complex*) fftwf_malloc(allCalNum * sizeof(fftwf_complex));
     fftwf_plan p = fftwf_plan_dft_r2c_1d(allCalNum, arg0, r, FFTW_ESTIMATE);

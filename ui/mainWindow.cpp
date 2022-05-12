@@ -126,16 +126,19 @@ void MainWindow::on_pSignalList_currentItemChanged(QListWidgetItem* current, QLi
     //保存上一个
     if (nullptr != previous)
     {
-        // this->saveExpToItem(previous, ui.pSignalExpress->toPlainText());
         auto pItem = static_cast<SignalItem*>(previous);
         pItem->setSourceCode(ui.pSignalExpress->toPlainText());
+        pItem->setFFTMode(ui.cbIsFFTmode->checkState() == Qt::Checked);
     }
 
     //载入下一个
     if (nullptr != current)
     {
-        const QString& expr = static_cast<SignalItem*>(current)->getSourceCode();
+        auto pItem = static_cast<SignalItem*>(current);
+        const QString& expr = pItem->getSourceCode();
         ui.pSignalExpress->setPlainText(expr);
+        ui.cbIsFFTmode->setCheckState(pItem->getFFTMode() ? Qt::Checked : Qt::Unchecked);
+
         if (not expr.isEmpty())
             this->calculateCurSig();
         else
@@ -183,9 +186,15 @@ void MainWindow::itemChanged(QListWidgetItem* item)
 
 void MainWindow::calculateCurSig(void)
 {
+    auto curCode = ui.pSignalExpress->toPlainText();
+
+    if (curCode.isEmpty())
+        return;
+
     auto pItem = static_cast<SignalItem*>(ui.pSignalList->currentItem());
-    pItem->setSourceCode(ui.pSignalExpress->toPlainText());//将编辑框代码保存至item
-    bool fftIsCalled = false;
+    pItem->setSourceCode(curCode);//将编辑框代码保存至item
+    isFFTMode = ui.cbIsFFTmode->checkState() == Qt::Checked;
+    pItem->setFFTMode(isFFTMode);
 
     //获取编译器和计算器的实例
     auto& calculator = Calculator_t::getInst();
@@ -212,13 +221,13 @@ void MainWindow::calculateCurSig(void)
             float curValue = res[calPoint];
             maxValue = __max(curValue, maxValue);
             minValue = __min(curValue, minValue);
-            this->pSeries->append(fftIsCalled ? calPoint * fs / calNum : calPoint, curValue);
+            this->pSeries->append(isFFTMode ? calPoint * fs / calNum : calPoint, curValue);
         }
         delete[] res;
 
         this->pSeries->setName(ui.pSignalList->currentItem()->text());
 
-        if (true == fftIsCalled)//频谱模式,横轴需要直接解算为对应的频率值
+        if (true == isFFTMode)//频谱模式,横轴需要直接解算为对应的频率值
         {
             this->pAxisX->setRange(0, fs);
         }
@@ -233,5 +242,4 @@ void MainWindow::calculateCurSig(void)
     {
         UI_ERROR("Signal compile fail");
     }
-
 }

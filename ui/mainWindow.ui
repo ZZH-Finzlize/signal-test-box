@@ -236,10 +236,29 @@
          </size>
         </property>
        </widget>
-       <widget class="QPushButton" name="pCalculateButton">
-        <property name="text">
-         <string>计算当前信号</string>
-        </property>
+       <widget class="QWidget" name="horizontalLayoutWidget">
+        <layout class="QHBoxLayout" name="horizontalLayout_2">
+         <item>
+          <widget class="QPushButton" name="pCalculateButton">
+           <property name="text">
+            <string>计算当前信号</string>
+           </property>
+          </widget>
+         </item>
+         <item>
+          <widget class="QCheckBox" name="cbIsFFTmode">
+           <property name="sizePolicy">
+            <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
+             <horstretch>0</horstretch>
+             <verstretch>0</verstretch>
+            </sizepolicy>
+           </property>
+           <property name="text">
+            <string>频谱模式</string>
+           </property>
+          </widget>
+         </item>
+        </layout>
        </widget>
       </widget>
      </widget>

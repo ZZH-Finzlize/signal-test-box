@@ -1,6 +1,6 @@
 #include "ChartView.h"
 #include <qDebug>
-bool fftIsCalled = false;//如果fft函数被调用过,则置位此标志位,通知ui进入频谱模式
+bool isFFTMode = false;//如果fft函数被调用过,则置位此标志位,通知ui进入频谱模式
 using namespace QtCharts;
 
 void ChartView::setUp()
@@ -44,7 +44,7 @@ void ChartView::mouseMoveEvent(QMouseEvent* event)
     else if (x > xMax)
         x = xMax;
 
-    if ((pSerise->count() > (int) x))// || (true == fftIsCalled && x < fs))
+    if ((pSerise->count() > (int) x))// || (true == isFFTMode && x < fs))
     {
         float y = pSerise->at((int) x).y();
 

@@ -26,3 +26,4 @@ public:
     virtual void wheelEvent(QWheelEvent* event) override;
     
 };
+extern bool isFFTMode;
