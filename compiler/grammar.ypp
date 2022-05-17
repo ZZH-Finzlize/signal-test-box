@@ -135,7 +135,12 @@ func_call: "symbol" '(' arg_list ')' {
     
     if(true == res)
     {
-        if($3->length() == find_func.numOfArg)//传入的实际参数和要求的参数一致
+        unsigned int len = 0;
+        
+        if(nullptr != $3)
+            len = $3->length();
+
+        if(len == find_func.numOfArg)//传入的实际参数和要求的参数一致
         {
             $$ = new ASTFunctionCall_t(find_func.pFunc, $3);
         }
